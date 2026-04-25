@@ -1,0 +1,451 @@
+# =============================================================================
+# Stock Trading Bot — settings
+# Secrets (API keys) belong in .env, not here.
+# =============================================================================
+
+broker:
+  # sim | alpaca_paper | alpaca_live
+  mode: alpaca_paper
+  region: us
+  # Slippage applied to sim fills (10 basis points = realistic retail spread)
+  sim_slippage_pct: 0.001
+
+trading:
+  live_mode: false
+  max_positions:
+    bullish: 15
+    neutral: 10
+    volatile: 5
+    bearish: 5
+  per_trade_pct: 0.05
+  downtrend_size_pct: 0.025
+  min_trade_usd: 100
+  max_trade_usd: 5000
+  risk_per_trade_pct: 0.01
+  stop_loss_mode: dynamic
+  stop_loss_pct: 0.035
+  stop_loss_lookback_candles: 5
+  stop_loss_timeframe: "15m"
+  stop_loss_max_pct: 0.05
+  take_profit_pct: 0.05
+  ratchet_min_move_pct: 0.025       # Stop only ratchets if price is 2.5%+ above current stop
+  ratchet_step_pct: 0.30            # How far to move stop toward price each ratchet (30% of gap)
+  trailing_stop:
+    enabled_for_small_caps: true
+    enabled_for_large_caps: true
+    small_cap_price_threshold: 15.0
+    large_cap_trail_pct: 0.10
+  flatten_on_weak_close: true
+
+  circuit_breaker:
+    daily_loss_pct: 0.04          # Stop new entries + tighten stops when day loss >= 4%
+    stop_tighten_factor: 0.5      # New stop = price - (price - old_stop) * factor (halves gap)
+
+  earnings:
+    blackout_days: 3              # Block new entry this many days before earnings
+    min_news_score_to_trade: 0.5  # Allow entry near earnings only with strong news catalyst
+
+  gap:
+    up_threshold_pct: 0.05        # Gap-up flag if price > prev_close * (1 + threshold)
+    min_news_score: 0.40          # Min news score required to take a gap-up trade
+
+  volume:
+    min_ratio: 0.35               # Skip BUY if today_volume < avg_volume * min_ratio
+
+  min_hold_hours_before_llm_close: 3.0  # LLM cannot close a position younger than this unless confidence >= 85%
+
+  position_review:
+    max_age_days: 5               # Run LLM re-evaluation on positions held this long
+
+  news_urgency:
+    lookback_hours: 2.0           # Short window for intraday sentiment spike detection
+    min_score_to_flag: -0.50      # Flag as urgent if 2h window score < this
+  buy_threshold: 0.35
+  sell_threshold: -0.35
+  min_price_for_buy: 5.0            # Hard veto at execution — screener filter alone is not enough
+  max_daily_stops_per_symbol: 1     # After 1 stop-out on a symbol today, don't re-enter it
+  same_day_reentry_blocked: true    # Block re-buying any ticker that was closed (by any reason) earlier today
+  min_entry_tech_score: 0.05        # BUY blocked if technical score is below this (filters noise entries)
+
+  cull:
+    premarket_weak_threshold: -0.10  # Drop ticker if tech*0.6 + news*0.4 < this
+    min_deep_score: 55               # Drop ticker if deep score < this (mirrors deep gate)
+  regime_size_multiplier:
+    bullish: 1.0
+    neutral: 1.0
+    volatile: 0.5
+    bearish: 0.5
+  skip_weak_in_adverse_regimes: true
+  adverse_regimes: [bearish, volatile]
+
+screener:
+  watchlist:
+    # ETFs / indices
+    - SPY
+    - QQQ
+    - IWM
+    - DIA
+    # Mega-cap tech
+    - AAPL
+    - MSFT
+    - GOOGL
+    - AMZN
+    - META
+    - NVDA
+    - TSLA
+    # Semiconductors
+    - AMD
+    - AVGO
+    - QCOM
+    - INTC
+    - MU
+    - TSM
+    - ASML
+    - LRCX
+    - KLAC
+    - AMAT
+    - TXN
+    - MRVL
+    - "ON"
+    - SWKS
+    - ARM
+    - SMCI
+    # Software / cloud
+    - CRM
+    - ORCL
+    - ADBE
+    - NOW
+    - PLTR
+    - SNOW
+    - INTU
+    - IBM
+    - DELL
+    - ACN
+    - PANW
+    - CRWD
+    - FTNT
+    - ZS
+    - NET
+    - DDOG
+    - MDB
+    - WDAY
+    - TEAM
+    - HUBS
+    - VEEV
+    - ZM
+    - OKTA
+    - TWLO
+    - CDNS
+    - HPE
+    # Consumer discretionary
+    - WMT
+    - COST
+    - HD
+    - LOW
+    - TGT
+    - NKE
+    - SBUX
+    - MCD
+    - DIS
+    - LULU
+    - CMG
+    - YUM
+    - ABNB
+    - BKNG
+    - EXPE
+    - MAR
+    - HLT
+    - RCL
+    - BBY
+    - DLTR
+    - DG
+    - ETSY
+    - EBAY
+    - ROST
+    - TJX
+    - CCL
+    # Financials
+    - JPM
+    - BAC
+    - WFC
+    - GS
+    - MS
+    - V
+    - MA
+    - AXP
+    - BLK
+    - SCHW
+    - CB
+    - PGR
+    - ICE
+    - CME
+    - SPGI
+    - MCO
+    - BX
+    - KKR
+    - AFL
+    - MSCI
+    # Industrials / defense
+    - BA
+    - CAT
+    - GE
+    - HON
+    - UPS
+    - DE
+    - LMT
+    - RTX
+    - NOC
+    - GD
+    - MMM
+    - ETN
+    - FDX
+    - EMR
+    - ITW
+    - LIN
+    - APD
+    - ROP
+    # Energy
+    - XOM
+    - CVX
+    - COP
+    - OXY
+    - SLB
+    - HAL
+    - EOG
+    - PSX
+    - VLO
+    - MPC
+    - KMI
+    - DVN
+    # Healthcare
+    - UNH
+    - JNJ
+    - LLY
+    - PFE
+    - ABBV
+    - MRK
+    - TMO
+    - DHR
+    - MDT
+    - ABT
+    - BSX
+    - ISRG
+    - DXCM
+    - CVS
+    - CI
+    - ELV
+    - AMGN
+    - GILD
+    - REGN
+    - VRTX
+    - BMY
+    - HCA
+    - BIIB
+    - ALGN
+    # Consumer staples
+    - PG
+    - KO
+    - PEP
+    - PM
+    - CL
+    - GIS
+    - MO
+    - MDLZ
+    # Utilities / REITs
+    - NEE
+    - DUK
+    - SO
+    - AMT
+    - PLD
+    - EQIX
+    - CCI
+    - SPG
+    # Communication / media
+    - NFLX
+    - T
+    - VZ
+    - CMCSA
+    - CHTR
+    - SPOT
+    - EA
+    - SNAP
+    - PINS
+    - RBLX
+    - TTWO
+    # Growth / fintech
+    - UBER
+    - COIN
+    - SHOP
+    - ROKU
+    - PYPL
+    - MELI
+    - AFRM
+    - DASH
+    - APP
+    - TTD
+    - LYFT
+    - HOOD
+    - SE
+    - GPN
+    # AI / emerging
+    - AI
+    - SOUN
+    - BBAI
+    - IONQ
+  min_price: 5.0
+  max_price: 1000.0
+  min_avg_volume: 1000000
+  min_market_cap: 1000000000
+  top_movers: 25
+  shortlist_size: 40
+  premarket_weak_threshold: -0.10
+  small_caps:
+    enabled: true
+    target_count: 12
+    min_price: 1.0
+    max_price: 15.0
+    min_avg_volume: 500000
+    min_market_cap: 100000000
+    max_market_cap: 3000000000
+
+signals:
+  weights:
+    technicals: 0.35
+    news: 0.15
+    breadth: 0.15
+    llm: 0.35
+  technicals:
+    rsi_period: 14
+    rsi_buy: 35
+    rsi_sell: 70
+    macd_fast: 12
+    macd_slow: 26
+    macd_signal: 9
+    sma_short: 20
+    sma_long: 50
+    atr_period: 14
+    vwap_timeframe: "5m"
+    adx_period: 14
+    adx_trend_threshold: 20
+    bb_period: 20
+    bb_std: 2.0
+    obv_lookback: 10
+    fib_lookback: 60      # daily bars to scan for swing high/low (~3 months)
+    fib_tolerance: 0.02   # within 2% of a Fib level = proximity zone
+  news:
+    max_headlines_per_ticker: 8
+    lookback_hours: 18
+    min_polarized_signals: 3      # Require at least this many keyword hits before trusting score; fewer = neutral 0.0
+  breadth:
+    index_symbols: [SPY, QQQ, IWM]
+    vix_symbol: "^VIX"
+    sectors: [XLK, XLF, XLE, XLV, XLY, XLP, XLI, XLB, XLU, XLRE, XLC]
+
+entry_queue:
+  enabled: true
+  queue_score_min: 0.28     # min combined score to queue (80% of buy threshold)
+  near_level_pct: 0.05      # Fib support must be within 5% below current price
+  bounce_touch_pct: 0.01    # low must come within this % of support to count as a test (1%)
+  bounce_candles: 1         # green candles off support to confirm bounce
+  breakout_confirm: true    # require candle body close above resistance for breakouts
+
+llm:
+  provider: lmstudio
+  base_url: http://192.168.4.39:1234/v1
+  # Model identifier. LM Studio uses whatever is loaded regardless of this
+  # string, but we keep it accurate for logs and the dashboard.
+  model: qwen2.5-14b-instruct
+  # Qwen 2.5 Instruct has no <think> step so calls are leaner than R1. 180s
+  # is comfortable headroom and surfaces a hung LM Studio faster than 240.
+  timeout_seconds: 540
+  # Token caps: Qwen 2.5 Instruct goes straight to answer, so we don't need
+  # the 1-3k padding that reasoning models ate on <think> blocks. Halving
+  # these meaningfully shortens each call without any quality loss.
+  max_tokens_advisor: 2500
+  max_tokens_news: 1200
+  max_tokens_regime: 1000
+  max_tokens_reflection: 10000
+  # 32B Instruct handles long context well, so we can give the advisor more
+  # historical lessons to reason over.
+  lessons_window_days: 21
+
+scheduler:
+  timezone: America/New_York
+  # pre_market_430:  04:30 (full scan + deep score all stale + cull)
+  # pre_market_refresh: 06:30, 07:30, 08:30 (incremental refresh + stale-only score + cull)
+  # trade_plan:      09:00 (final watchlist + LLM ranking -> top 20)
+  # decisions:       09:30, 11:30, 12:30, 13:30, 14:30, 15:30
+  # eod_audit:       16:30
+  eod_audit:   "16:30"
+  skip_holidays: true
+
+regime:
+  enabled: true
+  headlines_max: 12
+  cache_minutes: 30
+  vix_volatile_threshold: 25
+
+trade_quality:
+  strong_min_score: 0.55
+  weak_max_score: 0.40
+  downgrade_on_negative_news: -0.3
+
+logging:
+  level: INFO
+  console_level: INFO
+  file: logs/bot.log
+
+paths:
+  data_dir: data
+  journal_dir: data/journal
+  lessons_file: data/lessons.md
+  state_file: data/state.json
+  shortlist_file: data/shortlist.json
+  outcomes_file: data/outcomes.jsonl
+  rules_file: data/rules.json
+  signal_weights_file: data/signal_weights.json
+  indicator_outcomes_file: data/indicator_outcomes.jsonl
+  indicator_stats_file: data/indicator_stats.json
+
+# =============================================================================
+# Deep Score — 5-dimension research scorer (runs separately from intraday cycle)
+# =============================================================================
+deep_score:
+  enabled: true
+
+  # How long a score stays valid before the gate treats it as missing (no veto)
+  max_stale_days: 3
+
+  # Backtest-only staleness — 31 days ensures one deep score pass per run
+  backtest_stale_days: 31
+
+  # Score below this → BUY is vetoed entirely (F grade = avoid)
+  gate_threshold_veto: 25
+
+  # Score below this → position size halved (D grade = caution)
+  gate_threshold_caution: 40
+
+  # Score below this → position size reduced 25% (C grade = neutral)
+  gate_threshold_neutral: 55
+
+  # Max tickers scored per run (keeps runtime reasonable with local LLM)
+  # At ~30-50s/ticker on Qwen 2.5 14B, 20 tickers ≈ 10-17 minutes
+  max_tickers_per_run: 20
+
+  # Token budget per LLM call (5 calls per ticker)
+  # 500 is comfortable for Qwen 2.5 14B Instruct (no reasoning chain)
+  llm_max_tokens_per_dimension: 500
+
+# Rules in data/rules.json are NEVER auto-removed.
+learning:
+  ticker_track_window_days: 60
+  ticker_track_min_samples: 3
+  rules:
+    max_new_per_day: 3
+    min_fires_for_confidence: 5
+  signal_weights:
+    enabled: true
+    min_samples_required: 40
+    window_days: 30
+    max_nudge_per_run: 0.05
+    floor_per_weight: 0.05

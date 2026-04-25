@@ -1,0 +1,13 @@
+services:
+  bot:
+    build: .
+    container_name: stock-trading-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./config:/app/config   # so you can tune settings.yaml without rebuilds
+    environment:
+      - TZ=America/New_York

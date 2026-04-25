@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+pytest-cache-files-*/
+
+# Env + secrets
+.env
+*.key
+*.pem
+
+# Runtime data — journals, lessons, state persist locally but never ship
+data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Windows scheduled-task artifacts
+*.lnk
+
+# Local-only folders
+Ignore this file, for user only/
+
+# Claude Code runtime files
+.claude/scheduled_tasks.lock

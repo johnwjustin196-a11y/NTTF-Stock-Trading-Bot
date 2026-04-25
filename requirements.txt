@@ -1,0 +1,29 @@
+# Core
+pyyaml>=6.0
+python-dotenv>=1.0.0
+apscheduler>=3.10.4
+pytz>=2024.1
+
+# Market data / analysis
+yfinance>=0.2.40
+pandas>=2.2.0
+numpy>=1.26.0
+# pandas-ta removed — doesn't support Python 3.14 yet, and technicals.py
+# implements RSI/MACD/ATR/SMA directly without it.
+
+# News / feeds
+feedparser>=6.0.11
+requests>=2.32.0
+
+# Broker SDKs
+alpaca-py>=0.38.0
+
+# LLM
+anthropic>=0.39.0
+
+# Dashboard (optional — run `streamlit run dashboard.py` or double-click dashboard.bat)
+streamlit>=1.37.0
+plotly>=5.0.0
+
+# Testing
+pytest>=8.0.0
