@@ -84,3 +84,46 @@ Apply in order, run a backtest after each batch, compare to run 007.
 | regime = neutral | 30 | 30% | +$22 |
 | quality = weak | 19 | 32% | +$65 |
 | quality = normal | 17 | 18% | -$56 |
+
+---
+
+## Dashboard Display Bugs (found 2026-04-25)
+
+All fixes are in `dashboard.py` only — no logic changes.
+
+### 5. Run History: Win Rate shows "0%", Max DD shows "-0.01%"
+- **File:** `dashboard.py`, lines 1807 and 1809
+- **Root cause:** `_rs["wr"]` and `_rs["mdd"]` are decimal ratios (e.g., 0.2963, -0.0092) but the
+  Streamlit `NumberColumn` format `.0f%%` treats them as-is → rounds to 0 → shows "0%".
+  `Return %` on line 1806 is already multiplied by 100; Win Rate and Max DD are not.
+- **Fix:**
+  ```python
+  "Win Rate": round(_rs["wr"] * 100, 1),   # line 1807
+  "Max DD":   round(_rs["mdd"] * 100, 2),  # line 1809
+  ```
+- **Revert:** remove the `* 100` and `round()`
+
+### 6. Indicator summary table: all rows show identical Win %, Avg Return, Wins, Losses
+- **File:** `dashboard.py`, lines 1449–1458
+- **Root cause:** All 3,700 decision rows have every indicator score AND `fwd_5d_return`
+  populated, so the `valid` filter returns the exact same 3,700 rows for every indicator.
+  Overall win_rate/avg_ret are mathematically the same for all 7 indicators.
+- **Fix:** Replace those columns with per-indicator split stats that actually differ:
+  Bullish WR (score >= 0.5), Bearish WR (score < 0.5), Edge (= Bullish WR - Bearish WR),
+  sample counts for each group.
+- **Revert:** restore the old column list
+
+### 7. Indicator high/low chart: Avg Return bars are invisible
+- **File:** `dashboard.py`, lines 1358–1373
+- **Root cause:** Win % (~52%) and Avg Ret % (~0.8%) share the same Y-axis. Avg Ret bars
+  are < 1.5% of chart height and essentially invisible.
+- **Fix:** Show only Win % in the grouped bar chart (two bars: Bullish vs Bearish) with a
+  zoomed Y-axis. Display Avg Return as `st.metric()` calls below the chart instead.
+- **Revert:** restore the dual-metric bar chart
+
+### 8. Indicator tab: falsy `or` hides zero avg_ret
+- **File:** `dashboard.py`, line 1316
+- **Root cause:** `avg_ret = iv.get("avg_ret") or iv.get("avg_edge")` — if avg_ret is exactly
+  0.0 it evaluates as falsy and the display shows "-" instead of "+0.00%".
+- **Fix:** `avg_ret = iv.get("avg_ret") if iv.get("avg_ret") is not None else iv.get("avg_edge")`
+- **Revert:** restore the `or` form

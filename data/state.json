@@ -1,1 +1,42 @@
-{}
+{
+  "cash": 59015.26,
+  "positions": {
+    "AVGO": {
+      "qty": 11.0,
+      "avg_entry": 422.24
+    },
+    "GOOGL": {
+      "qty": 14.0,
+      "avg_entry": 343.755714
+    },
+    "INTU": {
+      "qty": 6.0,
+      "avg_entry": 378.41
+    },
+    "MCHP": {
+      "qty": 56.0,
+      "avg_entry": 89.13
+    },
+    "META": {
+      "qty": 7.0,
+      "avg_entry": 675.37
+    },
+    "MSFT": {
+      "qty": 11.0,
+      "avg_entry": 423.59
+    },
+    "PENN": {
+      "qty": 293.0,
+      "avg_entry": 17.046007
+    },
+    "STM": {
+      "qty": 99.0,
+      "avg_entry": 50.04
+    },
+    "TXN": {
+      "qty": 18.0,
+      "avg_entry": 276.595
+    }
+  },
+  "orders": []
+}
