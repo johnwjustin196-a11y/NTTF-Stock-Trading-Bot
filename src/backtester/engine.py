@@ -1453,6 +1453,12 @@ def main():
     from .reporter import generate_report
     print(generate_report(results))
 
+    try:
+        from src.utils.git_sync import push_data_to_github
+        push_data_to_github(f"backtest-{_archive_path.stem}")
+    except Exception as _ge:
+        print(f"[git-sync] non-critical: {_ge}")
+
 
 if __name__ == "__main__":
     main()
