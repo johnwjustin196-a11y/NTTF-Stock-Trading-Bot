@@ -56,5 +56,25 @@
     ],
     "start_date": "2025-12-15",
     "end_date": "2026-04-24"
+  },
+  {
+    "run_id": "backtest_results_no-llm011",
+    "label": "no-llm",
+    "date": "2026-04-25",
+    "days": 90,
+    "results_file": "data\\backtest_results_no-llm011.json",
+    "total_return_pct": -0.38,
+    "win_rate": 0.2682,
+    "sharpe": -0.2,
+    "max_drawdown_pct": -2.03,
+    "total_trades": 179,
+    "profit_factor": 0.97,
+    "starting_cash": 100000.0,
+    "final_equity": 99624.15,
+    "flags": [
+      "no-llm"
+    ],
+    "start_date": "2025-12-15",
+    "end_date": "2026-04-24"
   }
 ]
