@@ -1,0 +1,359 @@
+{
+  "trades": [
+    {
+      "symbol": "TXN",
+      "side": "SELL",
+      "qty": 17.0,
+      "entry": 278.238,
+      "exit": 276.0237,
+      "pnl": -37.64,
+      "pnl_pct": -0.008,
+      "reason": "stop_loss",
+      "opened_at": "2026-04-24",
+      "closed_at": "2026-04-24",
+      "entry_tech": 0.319,
+      "entry_news": 0.5,
+      "entry_breadth": 0.517,
+      "entry_llm": 0.0,
+      "entry_combined": 0.406,
+      "entry_quality": "normal",
+      "entry_regime": "bullish",
+      "entry_trend": "uptrend",
+      "stop_close": 277.065,
+      "post_stop_move_pct": 0.0038,
+      "stop_verdict": "ambiguous"
+    },
+    {
+      "symbol": "ELV",
+      "side": "SELL",
+      "qty": 14.0,
+      "entry": 344.7644,
+      "exit": 343.8058,
+      "pnl": -13.42,
+      "pnl_pct": -0.0028,
+      "reason": "stop_loss",
+      "opened_at": "2026-04-24",
+      "closed_at": "2026-04-24",
+      "entry_tech": 0.207,
+      "entry_news": 0.333,
+      "entry_breadth": 0.517,
+      "entry_llm": 0.0,
+      "entry_combined": 0.308,
+      "entry_quality": "weak",
+      "entry_regime": "bullish",
+      "entry_trend": "uptrend",
+      "stop_close": 344.71,
+      "post_stop_move_pct": 0.0026,
+      "stop_verdict": "ambiguous"
+    },
+    {
+      "symbol": "AMD",
+      "side": "SELL",
+      "qty": 14.0,
+      "entry": 344.6443,
+      "exit": 336.3933,
+      "pnl": -115.51,
+      "pnl_pct": -0.0239,
+      "reason": "stop_loss",
+      "opened_at": "2026-04-24",
+      "closed_at": "2026-04-24",
+      "entry_tech": 0.412,
+      "entry_news": 1.0,
+      "entry_breadth": 0.517,
+      "entry_llm": 0.0,
+      "entry_combined": 0.572,
+      "entry_quality": "strong",
+      "entry_regime": "bullish",
+      "entry_trend": "uptrend",
+      "stop_close": 347.78,
+      "post_stop_move_pct": 0.0338,
+      "stop_verdict": "too_tight"
+    },
+    {
+      "symbol": "NVDA",
+      "side": "SELL",
+      "qty": 23.0,
+      "entry": 209.9097,
+      "exit": 199.825,
+      "pnl": -231.95,
+      "pnl_pct": -0.048,
+      "reason": "stop_loss",
+      "opened_at": "2026-04-24",
+      "closed_at": "2026-04-24",
+      "entry_tech": 0.098,
+      "entry_news": 1.0,
+      "entry_breadth": 0.517,
+      "entry_llm": 0.0,
+      "entry_combined": 0.403,
+      "entry_quality": "normal",
+      "entry_regime": "bullish",
+      "entry_trend": "uptrend",
+      "stop_close": 208.18,
+      "post_stop_move_pct": 0.0418,
+      "stop_verdict": "too_tight"
+    },
+    {
+      "symbol": "AVGO",
+      "side": "SELL",
+      "qty": 12.0,
+      "entry": 415.7754,
+      "exit": 422.49,
+      "pnl": 80.58,
+      "pnl_pct": 0.0161,
+      "reason": "end_of_backtest",
+      "closed_at": "2026-04-24"
+    },
+    {
+      "symbol": "HAL",
+      "side": "SELL",
+      "qty": 126.0,
+      "entry": 39.4244,
+      "exit": 40.34,
+      "pnl": 115.37,
+      "pnl_pct": 0.0232,
+      "reason": "end_of_backtest",
+      "closed_at": "2026-04-24"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "SELL",
+      "qty": 19.0,
+      "entry": 259.3241,
+      "exit": 263.96,
+      "pnl": 88.08,
+      "pnl_pct": 0.0179,
+      "reason": "end_of_backtest",
+      "closed_at": "2026-04-24"
+    }
+  ],
+  "equity_curve": [
+    {
+      "date": "2026-04-24",
+      "equity": 99878.54,
+      "cash": 84717.54,
+      "positions": 3
+    }
+  ],
+  "cycle_log": [
+    {
+      "date": "2026-04-24",
+      "cycle": "09:30",
+      "symbol": "AMD",
+      "action": "BUY",
+      "qty": 14,
+      "price": 344.6443,
+      "combined": 0.572,
+      "tech_score": 0.412,
+      "news_score": 1.0,
+      "llm_score": 0.0,
+      "quality": "strong",
+      "regime": "bullish",
+      "reason": "tech=+0.41 news=+1.00 b=+0.52 llm=+0.00 -> +0.57 | deep=60(B)"
+    },
+    {
+      "date": "2026-04-24",
+      "cycle": "09:30",
+      "symbol": "AVGO",
+      "action": "BUY",
+      "qty": 12,
+      "price": 415.77536,
+      "combined": 0.51,
+      "tech_score": 0.297,
+      "news_score": 1.0,
+      "llm_score": 0.0,
+      "quality": "normal",
+      "regime": "bullish",
+      "reason": "tech=+0.30 news=+1.00 b=+0.52 llm=+0.00 -> +0.51 | deep=59(B)"
+    },
+    {
+      "date": "2026-04-24",
+      "cycle": "09:30",
+      "symbol": "HAL",
+      "action": "BUY",
+      "qty": 126,
+      "price": 39.424384999999994,
+      "combined": 0.441,
+      "tech_score": 0.17,
+      "news_score": 1.0,
+      "llm_score": 0.0,
+      "quality": "normal",
+      "regime": "bullish",
+      "reason": "tech=+0.17 news=+1.00 b=+0.52 llm=+0.00 -> +0.44 | deep=62(B)"
+    },
+    {
+      "date": "2026-04-24",
+      "cycle": "09:30",
+      "symbol": "TXN",
+      "action": "BUY",
+      "qty": 17,
+      "price": 278.23795999999993,
+      "combined": 0.406,
+      "tech_score": 0.319,
+      "news_score": 0.5,
+      "llm_score": 0.0,
+      "quality": "normal",
+      "regime": "bullish",
+      "reason": "tech=+0.32 news=+0.50 b=+0.52 llm=+0.00 -> +0.41 | deep=59(B)"
+    },
+    {
+      "date": "2026-04-24",
+      "cycle": "09:30",
+      "symbol": "AMZN",
+      "action": "BUY",
+      "qty": 19,
+      "price": 259.32406499999996,
+      "combined": 0.377,
+      "tech_score": 0.265,
+      "news_score": 0.5,
+      "llm_score": 0.0,
+      "quality": "weak",
+      "regime": "bullish",
+      "reason": "tech=+0.27 news=+0.50 b=+0.52 llm=+0.00 -> +0.38 | deep=58(B)"
+    },
+    {
+      "date": "2026-04-24",
+      "cycle": "09:30",
+      "symbol": "ELV",
+      "action": "BUY",
+      "qty": 14,
+      "price": 344.76442,
+      "combined": 0.308,
+      "tech_score": 0.207,
+      "news_score": 0.333,
+      "llm_score": 0.0,
+      "quality": "weak",
+      "regime": "bullish",
+      "reason": "tech=+0.21 news=+0.33 b=+0.52 llm=+0.00 -> +0.31 | deep=56(B)"
+    },
+    {
+      "date": "2026-04-24",
+      "cycle": "11:30",
+      "symbol": "NVDA",
+      "action": "BUY",
+      "qty": 23,
+      "price": 209.90969999999996,
+      "combined": 0.403,
+      "tech_score": 0.098,
+      "news_score": 1.0,
+      "llm_score": 0.0,
+      "quality": "normal",
+      "regime": "bullish",
+      "reason": "tech=+0.10 news=+1.00 b=+0.52 llm=+0.00 -> +0.40 | deep=60(B)"
+    },
+    {
+      "date": "2026-04-24",
+      "cycle": "12:30",
+      "symbol": "TXN",
+      "action": "CLOSE",
+      "reason": "stop-loss hit @ 276.30 (stop=276.30)"
+    },
+    {
+      "date": "2026-04-24",
+      "cycle": "14:30",
+      "symbol": "ELV",
+      "action": "CLOSE",
+      "reason": "stop-loss hit @ 343.96 (stop=344.15)"
+    },
+    {
+      "date": "2026-04-24",
+      "cycle": "EOD",
+      "symbol": "AMD",
+      "action": "stop_loss",
+      "price": 336.39327000000003
+    },
+    {
+      "date": "2026-04-24",
+      "cycle": "EOD",
+      "symbol": "NVDA",
+      "action": "stop_loss",
+      "price": 199.824975
+    }
+  ],
+  "deep_score_runs": [
+    "2026-04-24"
+  ],
+  "starting_cash": 100000.0,
+  "all_fills": [
+    {
+      "symbol": "AMD",
+      "side": "BUY",
+      "qty": 14,
+      "price": 344.6443,
+      "at": "2026-04-24"
+    },
+    {
+      "symbol": "AVGO",
+      "side": "BUY",
+      "qty": 12,
+      "price": 415.7754,
+      "at": "2026-04-24"
+    },
+    {
+      "symbol": "HAL",
+      "side": "BUY",
+      "qty": 126,
+      "price": 39.4244,
+      "at": "2026-04-24"
+    },
+    {
+      "symbol": "TXN",
+      "side": "BUY",
+      "qty": 17,
+      "price": 278.238,
+      "at": "2026-04-24"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "BUY",
+      "qty": 19,
+      "price": 259.3241,
+      "at": "2026-04-24"
+    },
+    {
+      "symbol": "ELV",
+      "side": "BUY",
+      "qty": 14,
+      "price": 344.7644,
+      "at": "2026-04-24"
+    },
+    {
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 23,
+      "price": 209.9097,
+      "at": "2026-04-24"
+    },
+    {
+      "symbol": "TXN",
+      "side": "SELL",
+      "qty": 17.0,
+      "price": 276.0237,
+      "at": "2026-04-24",
+      "reason": "stop_loss"
+    },
+    {
+      "symbol": "ELV",
+      "side": "SELL",
+      "qty": 14.0,
+      "price": 343.8058,
+      "at": "2026-04-24",
+      "reason": "stop_loss"
+    },
+    {
+      "symbol": "AMD",
+      "side": "SELL",
+      "qty": 14.0,
+      "price": 336.3933,
+      "at": "2026-04-24",
+      "reason": "stop_loss"
+    },
+    {
+      "symbol": "NVDA",
+      "side": "SELL",
+      "qty": 23.0,
+      "price": 199.825,
+      "at": "2026-04-24",
+      "reason": "stop_loss"
+    }
+  ]
+}

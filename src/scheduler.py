@@ -335,6 +335,27 @@ def job_entry_monitor() -> None:
         log.exception(f"[entry_monitor] error: {e}")
 
 
+def _git_push_eod(date_str: str) -> None:
+    """Stage all tracked files, commit, and push to GitHub after EOD."""
+    import subprocess
+    from .utils.config import project_root
+    root = str(project_root())
+    try:
+        subprocess.run(["git", "add", "."], cwd=root, capture_output=True, timeout=30)
+        result = subprocess.run(
+            ["git", "commit", "-m", f"Auto: EOD backup {date_str}"],
+            cwd=root, capture_output=True, text=True, timeout=30,
+        )
+        committed = result.returncode == 0
+        push = subprocess.run(["git", "push"], cwd=root, capture_output=True, text=True, timeout=60)
+        if push.returncode == 0:
+            log.info(f"EOD git push complete (new commit: {committed})")
+        else:
+            log.warning(f"EOD git push failed: {push.stderr.strip()[:200]}")
+    except Exception as _e:
+        log.warning(f"EOD git push skipped: {_e}")
+
+
 @_skip_if_not_trading_day
 @_time_job
 def job_eod() -> None:
@@ -343,6 +364,8 @@ def job_eod() -> None:
     entry_queue.log_eod_outcomes()  # record close prices before clearing cache
     entry_queue.expire_entries()    # clear any remaining queued entries
     run_eod_reflection(broker)
+    from datetime import date as _date
+    _git_push_eod(_date.today().isoformat())
 
 
 @_time_job

@@ -1,0 +1,16 @@
+
+──────────────────────────────────────────────────────────────
+FIB INDICATOR TEST  |  252 trading days  |  198 tickers
+TP trigger: 5.0%  (ratcheting stop — no fixed exit)
+──────────────────────────────────────────────────────────────
+Total fires: 17334
+
+  resistance_breakout        5008 fires  |  avg -1.07%  |  win 31%  |  best +43.70%  worst -5.00%
+  support_bounce             12326 fires  |  avg +0.46%  |  win 51%  |  best +51.44%  worst -5.00%
+
+Exit reasons:
+  max_hold_reached           7802  (45%)
+  stop_loss                  6519  (38%)
+  locked_profit_stop         3013  (17%)
+──────────────────────────────────────────────────────────────
+

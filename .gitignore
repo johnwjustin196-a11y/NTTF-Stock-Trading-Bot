@@ -12,9 +12,6 @@ pytest-cache-files-*/
 *.key
 *.pem
 
-# Runtime data — journals, lessons, state persist locally but never ship
-data/
-
 # IDE
 .vscode/
 .idea/

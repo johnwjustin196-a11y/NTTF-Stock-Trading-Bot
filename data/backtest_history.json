@@ -1,0 +1,22 @@
+[
+  {
+    "run_id": "backtest_results_no-llm009",
+    "label": "no-llm",
+    "date": "2026-04-25",
+    "days": 1,
+    "results_file": "data\\backtest_results_no-llm009.json",
+    "total_return_pct": -0.12,
+    "win_rate": 0.4286,
+    "sharpe": 0.0,
+    "max_drawdown_pct": -0.12,
+    "total_trades": 7,
+    "profit_factor": 0.71,
+    "starting_cash": 100000.0,
+    "final_equity": 99878.54,
+    "flags": [
+      "no-llm"
+    ],
+    "start_date": "2026-04-24",
+    "end_date": "2026-04-24"
+  }
+]
