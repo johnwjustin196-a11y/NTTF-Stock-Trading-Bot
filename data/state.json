@@ -1,5 +1,5 @@
 {
-  "cash": 59015.26,
+  "cash": 39545.05,
   "positions": {
     "AVGO": {
       "qty": 11.0,
@@ -36,7 +36,132 @@
     "TXN": {
       "qty": 18.0,
       "avg_entry": 276.595
+    },
+    "ARM": {
+      "qty": 23.0,
+      "avg_entry": 214.88,
+      "stop_loss": 210.07,
+      "take_profit": 225.46125,
+      "tags": {
+        "quality": "strong",
+        "trend": "uptrend",
+        "regime": "bullish",
+        "sizing_mode": "normal",
+        "entry_price": 214.88,
+        "entry_datetime": "2026-04-27T15:35:40.687514",
+        "stop_reason": "dynamic stop = min(low) of last 5 15m candles = 210.07 (2.17% below entry)",
+        "small_cap": false,
+        "gap_up": false,
+        "trailing": true,
+        "trail_pct": 0.1,
+        "stop_order_status": "placed"
+      },
+      "stop_order_id": "c45272d5-8034-449d-bbe3-61d5d4bf4724",
+      "stop_order_type": "trailing_stop"
+    },
+    "ON": {
+      "qty": 51.0,
+      "avg_entry": 97.97,
+      "stop_loss": 97.83,
+      "take_profit": 102.84224999999999,
+      "tags": {
+        "quality": "strong",
+        "trend": "uptrend",
+        "regime": "bullish",
+        "sizing_mode": "normal",
+        "entry_price": 97.97,
+        "entry_datetime": "2026-04-27T15:35:46.270024",
+        "stop_reason": "dynamic stop = min(low) of last 5 15m candles = 97.83 (0.12% below entry)",
+        "small_cap": false,
+        "gap_up": false,
+        "trailing": true,
+        "trail_pct": 0.1,
+        "stop_order_status": "placed"
+      },
+      "stop_order_id": "fabcfe8c-4431-4f09-adf9-18d159bc9ab1",
+      "stop_order_type": "trailing_stop"
+    },
+    "MU": {
+      "qty": 9.0,
+      "avg_entry": 524.96,
+      "stop_loss": 513.645,
+      "take_profit": 549.99,
+      "tags": {
+        "quality": "strong",
+        "trend": "uptrend",
+        "regime": "bullish",
+        "sizing_mode": "normal",
+        "entry_price": 524.96,
+        "entry_datetime": "2026-04-27T15:35:51.172140",
+        "stop_reason": "dynamic stop = min(low) of last 5 15m candles = 513.64 (1.94% below entry)",
+        "small_cap": false,
+        "gap_up": true,
+        "trailing": true,
+        "trail_pct": 0.021554023163669715,
+        "stop_order_status": "placed"
+      },
+      "stop_order_id": "a52454b9-3877-41e0-ab8f-3db394832b58",
+      "stop_order_type": "trailing_stop"
+    },
+    "MRVL": {
+      "qty": 32.0,
+      "avg_entry": 155.06,
+      "stop_loss": 148.055125,
+      "take_profit": 161.09625000000003,
+      "tags": {
+        "quality": "strong",
+        "trend": "uptrend",
+        "regime": "bullish",
+        "sizing_mode": "normal",
+        "entry_price": 155.06,
+        "entry_datetime": "2026-04-27T15:35:54.634612",
+        "stop_reason": "prior-candle low 154.05 >= entry 153.43",
+        "small_cap": false,
+        "gap_up": false,
+        "trailing": true,
+        "trail_pct": 0.1,
+        "stop_order_status": "placed"
+      },
+      "stop_order_id": "95f519b3-2861-42e1-bd5b-adb511185d39",
+      "stop_order_type": "trailing_stop"
     }
   },
-  "orders": []
+  "orders": [
+    {
+      "id": "a0da03aa-0a88-4790-ae93-05dc472da8a6",
+      "symbol": "ARM",
+      "side": "BUY",
+      "qty": 9.0,
+      "price": 214.88,
+      "at": "2026-04-27 15:35:40.685304+00:00",
+      "notes": "Bullish regime, strong technicals and news sentiment; no conflicting rules or lessons. | trend=uptrend | regime=bullish | quality=strong | deep_score=61 (B/accumulate) \u2014 full size allowed"
+    },
+    {
+      "id": "ddaa6adc-4ba5-4528-bbd0-6f02204d081c",
+      "symbol": "ON",
+      "side": "BUY",
+      "qty": 51.0,
+      "price": 97.97,
+      "at": "2026-04-27 15:35:46.264667+00:00",
+      "notes": "Strong technicals, positive news, bullish market breadth; fundamentals weak but not contrarian. | trend=uptrend | regime=bullish | quality=strong | deep_score=56 (B/accumulate) \u2014 full size allowed"
+    },
+    {
+      "id": "a5ecd484-2947-4720-a32c-07c5af398333",
+      "symbol": "MU",
+      "side": "BUY",
+      "qty": 9.0,
+      "price": 524.96,
+      "at": "2026-04-27 15:35:51.168912+00:00",
+      "notes": "Strong technicals, bullish market breadth, mixed news; overbought RSI but trend strong. | trend=uptrend | regime=bullish | quality=strong | deep_score=72 (A/buy) \u2014 full size allowed | gap-up 6.0% with"
+    },
+    {
+      "id": "6535fada-9be7-46bb-8ba5-1b767b6e799b",
+      "symbol": "MRVL",
+      "side": "BUY",
+      "qty": 15.0,
+      "price": 155.06,
+      "at": "2026-04-27 15:35:54.627740+00:00",
+      "notes": "Strong news sentiment, bullish technicals, and market breadth; no position yet. | trend=uptrend | regime=bullish | quality=strong | deep_score=66 (B/accumulate) \u2014 full size allowed"
+    }
+  ]
 }
