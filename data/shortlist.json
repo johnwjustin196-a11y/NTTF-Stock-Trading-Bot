@@ -1,1 +1,168 @@
-{}
+{
+  "date": "2026-04-27",
+  "symbols": [
+    "AVGO",
+    "ARM",
+    "MRVL",
+    "MU",
+    "ON",
+    "CRWD",
+    "KLAC",
+    "AMZN",
+    "GOOGL",
+    "NVDA",
+    "TXN",
+    "CRM",
+    "PANW",
+    "MSFT",
+    "INTU",
+    "ASML",
+    "ORCL",
+    "IBM",
+    "AAPL",
+    "AMD"
+  ],
+  "trends": {
+    "AVGO": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "sideways",
+      "change_6mo": 0.16768408788725633,
+      "change_30d": 0.3122672118200861
+    },
+    "ARM": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "uptrend",
+      "change_6mo": 0.3145784569333438,
+      "change_30d": 1.0285960912189525
+    },
+    "MRVL": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "uptrend",
+      "change_6mo": 0.8522150744487351,
+      "change_30d": 0.8701342637964304
+    },
+    "MU": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "uptrend",
+      "change_6mo": 1.2567923100696774,
+      "change_30d": 0.1656536632695066
+    },
+    "ON": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "uptrend",
+      "change_6mo": 0.8678815671193373,
+      "change_30d": 0.6806149070552745
+    },
+    "CRWD": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "sideways",
+      "change_6mo": -0.15399283640631184,
+      "change_30d": 0.014373684008016719
+    },
+    "KLAC": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "uptrend",
+      "change_6mo": 0.5924222035704007,
+      "change_30d": 0.3639823916002574
+    },
+    "AMZN": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "sideways",
+      "change_6mo": 0.16310520691971997,
+      "change_30d": 0.27119946338908235
+    },
+    "GOOGL": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "uptrend",
+      "change_6mo": 0.27901365895995883,
+      "change_30d": 0.13934099274606818
+    },
+    "NVDA": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "sideways",
+      "change_6mo": 0.08762858790505335,
+      "change_30d": 0.1554507865323769
+    },
+    "TXN": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "uptrend",
+      "change_6mo": 0.6359129251965376,
+      "change_30d": 0.4526680806254008
+    },
+    "CRM": {
+      "label": "downtrend",
+      "short": "sideways",
+      "long": "downtrend",
+      "change_6mo": -0.3026186917805855,
+      "change_30d": -0.07607736363451485
+    },
+    "PANW": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "sideways",
+      "change_6mo": -0.18952290740583608,
+      "change_30d": 0.0689737080528344
+    },
+    "MSFT": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "sideways",
+      "change_6mo": -0.20112135100449863,
+      "change_30d": 0.073492626017812
+    },
+    "INTU": {
+      "label": "downtrend",
+      "short": "sideways",
+      "long": "downtrend",
+      "change_6mo": -0.42060901722316885,
+      "change_30d": -0.10003177584964675
+    },
+    "ASML": {
+      "label": "uptrend",
+      "short": "sideways",
+      "long": "uptrend",
+      "change_6mo": 0.3752146059657119,
+      "change_30d": 0.08323612023775269
+    },
+    "ORCL": {
+      "label": "sideways",
+      "short": "sideways",
+      "long": "sideways",
+      "change_6mo": -0.3842217393826968,
+      "change_30d": 0.11714266067595323
+    },
+    "IBM": {
+      "label": "downtrend",
+      "short": "downtrend",
+      "long": "downtrend",
+      "change_6mo": -0.2590628942446843,
+      "change_30d": -0.05806400488320905
+    },
+    "AAPL": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "sideways",
+      "change_6mo": 0.008370224398032507,
+      "change_30d": 0.08371982588435337
+    },
+    "AMD": {
+      "label": "uptrend",
+      "short": "uptrend",
+      "long": "uptrend",
+      "change_6mo": 0.33943073737079216,
+      "change_30d": 0.7984900907818656
+    }
+  },
+  "trade_plan": true
+}

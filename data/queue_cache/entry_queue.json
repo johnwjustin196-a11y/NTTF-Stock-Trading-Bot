@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "symbol": "NVDA",
+    "queued_at": "2026-04-27T13:33:55.410829+00:00",
+    "queued_cycle": "09:33",
+    "entry_type": "bounce_support",
+    "price_at_queue": 210.81,
+    "trigger_price": 200.9558,
+    "fib_ratio": 0.786,
+    "fib_direction": "support",
+    "combined_score_at_queue": 0.3069,
+    "deep_size_mult": 1.0,
+    "expires_at": "2026-04-27T20:00:00+00:00",
+    "check_count": 1
+  }
+]

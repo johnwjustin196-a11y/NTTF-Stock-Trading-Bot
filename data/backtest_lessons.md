@@ -626,3 +626,183 @@ The NVDA trade resulted in a -4.80% loss ($-232) due to hitting the stop loss at
 
 ### [2026-04-24] META post-mortem (-2.8%)
 The trade on META exited at a loss of -2.82% due to hitting the stop loss at $674.15, indicating that the entry point was too close to the stop level, leaving little room for price fluctuations.
+
+### [2025-10-31] MU post-mortem (-3.6%)
+The trade on MU resulted in a -3.57% loss due to the stop-loss being hit at $219.20, indicating that the risk management parameters were not aligned with the market volatility during this period.
+
+### [2025-10-31] UPS post-mortem (-1.7%)
+The trade on UPS resulted in a -1.70% loss due to hitting the stop loss at $91.67, indicating that the market moved against the position faster than anticipated despite setting a reasonable stop loss level.
+
+### [2025-10-31] ALGN post-mortem (-1.7%)
+The trade on ALGN resulted in a -1.70% loss due to hitting the stop loss at $134.62, indicating that the risk management parameters were too tight given the extended holding period of 4260 hours and 34 minutes.
+
+### [2025-11-03] AAPL post-mortem (-1.7%)
+The trade on AAPL resulted in a -1.70% loss due to the stop-loss being hit at $268.03, indicating that the initial risk management parameters were too tight given the extended holding period of 4261 hours and 46 minutes.
+
+### [2025-11-03] MELI post-mortem (-2.0%)
+The trade on MELI resulted in a -1.95% loss due to the stop-loss being hit, indicating that the risk management parameters were not aligned with market volatility during this holding period.
+
+### [2025-11-03] NVDA post-mortem (+0.1%)
+The NVDA trade closed with a minimal profit of +0.05%, demonstrating that even in a relatively flat market environment (close reason indicating mixed signals from technicals, news, and other factors), small gains can be achieved through precise timing near support levels.
+
+### [2025-11-03] OXY post-mortem (-1.7%)
+The trade on OXY resulted in a -1.70% loss ($-42) due to hitting the stop loss at $40.02, indicating that the entry was too close to the stop level given the volatility.
+
+### [2025-11-04] VLO post-mortem (-1.7%)
+The trade on VLO resulted in a -1.70% loss due to the stop-loss being hit at $165.06, indicating that the risk management parameters were too tight for the observed market movement.
+
+### [2025-11-05] TWLO post-mortem (-3.7%)
+The TWLO trade resulted in a -3.69% loss due to hitting the stop loss at $129.53, highlighting the importance of accurate entry context and risk management.
+
+### [2025-11-06] RTX post-mortem (-1.4%)
+The trade on RTX resulted in a -1.37% loss due to a prolonged holding period influenced by technical factors and market sentiment, despite setting appropriate stop-loss and take-profit levels.
+
+### [2025-11-07] AMZN post-mortem (-2.7%)
+The trade on AMZN resulted in a loss of $133 (-2.68%) due to the stop-loss being hit at $240.15, indicating that the risk management parameters were not aligned with the market volatility during this holding period.
+
+### [2025-11-07] ISRG post-mortem (+5.2%)
+The trade on ISRG was profitable, yielding a +5.21% return due to the take-profit condition being hit at $560.30, slightly exceeding the set target of $558.63.
+
+### [2025-11-10] PSX post-mortem (+1.9%)
+The trade on PSX was profitable, yielding a +1.89% return due to the positive technical indicators and limited market noise impact, despite a lengthy holding period of 4265 hours and 45 minutes.
+
+### [2025-11-11] XOM post-mortem (+5.4%)
+The trade on XOM was successful, yielding a +5.42% profit of $266 when the take-profit at $117.50 was hit, demonstrating the effectiveness of setting conservative take-profits to secure gains.
+
+### [2025-11-11] MU post-mortem (-5.2%)
+The trade on MU resulted in a -5.19% loss due to the stop-loss being hit at $242.31, indicating that the risk management parameters were not aligned with the market volatility during this holding period.
+
+### [2025-11-12] LLY post-mortem (+5.0%)
+The trade on LLY yielded a +4.96% profit, demonstrating the effectiveness of setting an appropriate take-profit level that aligns closely with technical indicators and market expectations.
+
+### [2025-11-12] DDOG post-mortem (-2.6%)
+The trade on DDOG resulted in a -2.64% loss due to hitting the stop loss at $188.61, indicating that the entry point may have been too close to potential downward pressure without enough room for price fluctuation.
+
+### [2025-11-13] MU post-mortem (-1.7%)
+The trade on MU resulted in a -1.70% loss due to the stop-loss being hit at $238.84, indicating that the risk management parameters were too tight given the holding period and market volatility.
+
+### [2025-11-13] AMZN post-mortem (-3.3%)
+The trade on AMZN resulted in a -3.33% loss due to the stop-loss being hit at $241.09, indicating that the initial risk management parameters were too tight for the volatility observed.
+
+### [2025-11-13] CVX post-mortem (+0.1%)
+The trade on CVX resulted in a minor profit of +0.15%, demonstrating that even in a relatively flat market condition, small gains can be achieved through precise timing and exit strategies.
+
+### [2025-11-13] V post-mortem (-0.9%)
+The trade on V resulted in a -0.85% loss, primarily due to technical factors outweighing positive news sentiment, highlighting the importance of balancing multiple indicators.
+
+### [2025-11-13] CRM post-mortem (-1.7%)
+The trade on CRM resulted in a loss of 1.70% due to the stop-loss being hit at $239.49, indicating that the entry point might have been too close to potential downside risks without sufficient room for price fluctuations.
+
+### [2025-11-14] GOOGL post-mortem (-3.7%)
+The trade on GOOGL resulted in a -3.69% loss due to hitting the stop loss at $270.57, indicating that the entry point may have been too optimistic given the subsequent price action.
+
+### [2025-11-17] OXY post-mortem (+1.9%)
+The trade on OXY resulted in a modest gain of +1.92%, closing at $41.91 due to technical indicators and deep learning model signals, despite the negative sentiment from basic analysis (-0.55) and long-term machine learning models (-0.50).
+
+### [2025-11-20] MAR post-mortem (-1.0%)
+The trade on MAR resulted in a -1.04% loss due to unfavorable technical factors and lower-than-expected performance, despite setting a reasonable stop-loss at $278.88.
+
+### [2025-11-21] DVN post-mortem (+0.8%)
+The trade on DVN resulted in a minor profit of +0.85%, but it highlights the importance of setting appropriate stop-loss levels, as the initial placement at $35.98 was too conservative given the actual exit price of $34.60 when the stop-loss was hit at $34.65.
+
+### [2025-11-25] LLY post-mortem (-2.8%)
+The trade on LLY resulted in a -2.83% loss due to the locked_profit_stop at $1072.14, indicating that the stop placement was too close given the extended holding period of 3664 hours and 49 minutes.
+
+### [2025-11-28] LLY post-mortem (-1.7%)
+The trade on LLY resulted in a -1.70% loss due to the stop-loss being hit at $1081.39, indicating that the risk management parameters were not aligned with the volatility of the stock during this period.
+
+### [2025-12-01] MRK post-mortem (-1.7%)
+The trade on MRK resulted in a -1.70% loss due to the stop-loss being hit at $101.48, indicating that the risk management parameters were not aligned with the market volatility during the holding period.
+
+### [2025-12-01] MDT post-mortem (-1.7%)
+The MDT trade resulted in a -1.70% loss due to hitting the stop-loss at $102.35, indicating that the risk management parameters were too tight for this particular holding period and price movement.
+
+### [2025-12-03] HAL post-mortem (+4.9%)
+The trade on HAL was successful, yielding a +4.91% profit due to the take-profit level being hit at $27.22 as planned.
+
+### [2025-12-03] AMGN post-mortem (-1.7%)
+The trade on AMGN resulted in a -1.70% loss due to hitting the stop loss at $337.97, indicating that the market moved against the position faster than anticipated.
+
+### [2025-12-04] DG post-mortem (+5.0%)
+The trade on DG was successful, achieving a +4.99% profit of $241 by hitting the take-profit level at $123.61, demonstrating effective risk management through appropriate stop and take-profit placement.
+
+### [2025-12-04] PSX post-mortem (-1.7%)
+The trade on PSX resulted in a -1.70% loss due to hitting the stop loss at $136.78, indicating that the market moved against the position faster than anticipated despite setting a reasonable take profit level of $145.80.
+
+### [2025-12-05] ACN post-mortem (-1.7%)
+The trade on ACN resulted in a -1.70% loss due to the stop-loss being hit at $264.00, indicating that the risk management parameters were not aligned with the market's volatility during this period.
+
+### [2025-12-05] DLTR post-mortem (+5.0%)
+The trade on DLTR was successful, yielding a +5.00% profit of $243 when the take-profit level at $124.05 was hit, demonstrating effective risk management through proper placement of stop-loss and take-profit levels.
+
+### [2025-12-05] DG post-mortem (-3.0%)
+The trade on DG resulted in a -3.04% loss due to the locked_profit_stop mechanism triggering at $124.61, indicating that the stop placement may have been too close given the holding period and volatility.
+
+### [2025-12-08] CVX post-mortem (-2.2%)
+The trade on CVX resulted in a loss of -2.24%, triggered by hitting the stop-loss at $147.32, indicating that the chosen stop level was too close to the entry price, failing to account for normal volatility.
+
+### [2025-12-08] MAR post-mortem (-3.8%)
+The trade for MAR resulted in a loss of -3.76% due to the stop-loss being hit at $286.71, indicating that the risk management parameters were not aligned with market volatility during this period.
+
+### [2025-12-08] EOG post-mortem (-1.7%)
+The trade on EOG resulted in a -1.70% loss due to the stop-loss being hit at $108.98, indicating that the risk management parameters were not aligned with the market volatility during this period.
+
+### [2025-12-08] DG post-mortem (-3.7%)
+The DG trade resulted in a -3.69% loss due to the stop-loss being hit at $122.44, indicating that the initial risk management parameters were not aligned with market volatility during the holding period.
+
+### [2025-12-08] APP post-mortem (-1.7%)
+The trade on APP resulted in a -1.70% loss due to the stop-loss being hit at $686.27, indicating that the risk management parameters were not aligned with the market volatility during this holding period.
+
+### [2025-12-08] PSX post-mortem (-1.7%)
+The trade on PSX resulted in a -1.72% loss due to hitting the stop loss at $137.32, indicating that the entry point was too close to the stop level given the volatility observed.
+
+### [2025-12-09] META post-mortem (-1.7%)
+The trade on META resulted in a -1.70% loss due to hitting the stop loss at $653.25, highlighting the importance of reassessing stop-loss levels based on current market volatility and price action.
+
+### [2025-12-09] AMAT post-mortem (-1.7%)
+The trade on AMAT resulted in a loss of 1.70% due to hitting the stop-loss at $265.67, indicating that the market moved against the position faster than anticipated despite setting a reasonable take-profit level.
+
+### [2025-12-10] EXPE post-mortem (+5.0%)
+The trade on EXPE was successful, generating a +5.01% profit by hitting the take-profit level at $271.40 after holding for 3501 hours and 45 minutes, demonstrating the effectiveness of setting clear exit points.
+
+### [2025-12-10] ACN post-mortem (-1.8%)
+The trade on ACN resulted in a loss of -1.83% due to hitting the stop loss at $265.88, indicating that the entry was too close to the stop level given the volatility observed.
+
+### [2025-12-11] DLTR post-mortem (+5.0%)
+The trade on DLTR was profitable, yielding a +4.99% return due to the take-profit level being hit at $129.79 as planned.
+
+### [2025-12-11] ASML post-mortem (-2.6%)
+The trade on ASML resulted in a -2.64% loss due to hitting the stop loss at $1097.29, highlighting the importance of setting appropriate stop-loss levels that align better with the stock's volatility and trend.
+
+### [2025-12-15] CRM post-mortem (-1.7%)
+The trade on CRM resulted in a -1.70% loss due to the stop-loss being hit, indicating that the entry point may have been too close to potential downside risk without sufficient room for price fluctuation.
+
+### [2025-12-15] DVN post-mortem (-1.7%)
+The trade on DVN resulted in a -1.70% loss due to the stop-loss being hit at $36.18, indicating that the risk management parameters were not aligned with market volatility during the holding period.
+
+### [2025-12-15] DLTR post-mortem (+1.9%)
+The trade on DLTR resulted in a modest gain of +1.94%, demonstrating that despite the stock's prolonged holding period, the incremental gains were driven more by technical factors (+0.34) rather than news or broader market influences.
+
+### [2025-12-15] APP post-mortem (-1.8%)
+The trade on APP resulted in a loss of -1.84% due to hitting the stop loss at $668.84, indicating that the price movement was unfavorable despite setting an entry point and take profit level.
+
+### [2025-12-16] CVX post-mortem (-1.7%)
+The trade on CVX resulted in a -1.70% loss due to the stop-loss being hit at $146.47, indicating that the risk management parameters were too tight for this particular holding period and price movement.
+
+### [2025-12-16] COP post-mortem (-1.7%)
+The COP trade resulted in a -1.70% loss due to the stop-loss being hit at $90.47, indicating that the risk management parameters were not aligned well with market volatility during the holding period.
+
+### [2025-12-17] DIA post-mortem (+0.7%)
+The trade on DIA from an entry at $476.93 to exit at $480.27, resulting in a +0.70% profit, was closed due to technical indicators and news sentiment turning negative (-0.39), indicating that the market conditions deteriorated before reaching the take-profit level.
+
+### [2025-12-17] WMT post-mortem (+1.9%)
+The trade on WMT resulted in a modest gain of +1.88%, closing at $116.00 from an entry price of $113.86, primarily due to technical factors (+0.04) despite negative news impact (-0.50). The long holding period (3358h48m) suggests the trade benefited more from patience than immediate market movements.
+
+### [2025-12-17] ROST post-mortem (-1.7%)
+The trade on ROST resulted in a -1.70% loss due to hitting the stop loss at $181.72, underscoring the importance of re-evaluating stop-loss placement based on current market volatility and trend.
+
+### [2025-12-18] ACN post-mortem (-0.8%)
+The ACN trade resulted in a -0.76% loss due to negative technical indicators and possibly unfavorable news, highlighting the importance of monitoring real-time market sentiment and adjusting positions accordingly.
+
+### [2025-12-18] LULU post-mortem (-2.1%)
+The trade on LULU resulted in a -2.10% loss due to the stop-loss being hit at $216.03, indicating that the initial risk management parameters were too tight given the holding period and market volatility.

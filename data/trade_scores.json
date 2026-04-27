@@ -1,1 +1,2486 @@
-{}
+{
+  "SPY": {
+    "symbol": "SPY",
+    "score": 50.0,
+    "grade": "C",
+    "signal": "neutral",
+    "updated": "2026-04-27T10:32:18.393620+00:00",
+    "price_at_score": null,
+    "next_earnings": null,
+    "breakdown": {},
+    "key_stats": {},
+    "error": "skipped: ETF"
+  },
+  "QQQ": {
+    "symbol": "QQQ",
+    "score": 50.0,
+    "grade": "C",
+    "signal": "neutral",
+    "updated": "2026-04-27T10:32:19.979308+00:00",
+    "price_at_score": null,
+    "next_earnings": null,
+    "breakdown": {},
+    "key_stats": {},
+    "error": "skipped: ETF"
+  },
+  "IWM": {
+    "symbol": "IWM",
+    "score": 50.0,
+    "grade": "C",
+    "signal": "neutral",
+    "updated": "2026-04-27T10:32:21.612572+00:00",
+    "price_at_score": null,
+    "next_earnings": null,
+    "breakdown": {},
+    "key_stats": {},
+    "error": "skipped: ETF"
+  },
+  "DIA": {
+    "symbol": "DIA",
+    "score": 50.0,
+    "grade": "C",
+    "signal": "neutral",
+    "updated": "2026-04-27T10:32:23.336223+00:00",
+    "price_at_score": null,
+    "next_earnings": null,
+    "breakdown": {},
+    "key_stats": {},
+    "error": "skipped: ETF"
+  },
+  "AAPL": {
+    "symbol": "AAPL",
+    "score": 68.5,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T10:32:41.248876+00:00",
+    "price_at_score": 271.05999755859375,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 72,
+        "rationale": "Above MAs, bullish MACD, strong relative performance, high RSI",
+        "bull": "Bullish MACD crossover, price above all moving averages",
+        "bear": "High RSI indicating overbought conditions"
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "Strong revenue growth, high margins, robust profitability, but elevated valuation and negative net cash.",
+        "bull": "High earnings growth and strong free cash flow generation.",
+        "bear": "Elevated P/E ratios and significant debt relative to equity."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with upside potential, low short interest.",
+        "bull": "Consensus buy rating and price target upside",
+        "bear": "Insider net sentiment is bearish"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High beta, significant drawdowns, moderate liquidity risks.",
+        "bull": "Strong free cash flow generation",
+        "bear": "High debt levels and binary earnings risk"
+      },
+      "thesis": {
+        "score": 75,
+        "rationale": "Balanced view with strong fundamentals and technicals, but elevated risks.",
+        "bull": "Strong free cash flow and earnings growth support upside potential.",
+        "bear": "High valuation and significant debt pose downside risk."
+      }
+    },
+    "key_stats": {
+      "market_cap": 3979469914112,
+      "revenue_growth": 0.157,
+      "gross_margin": 0.47325,
+      "operating_margin": 0.35374,
+      "pe_forward": 28.984484,
+      "ps_ratio": 9.135249,
+      "ev_revenue": 9.189,
+      "short_float": 0.0092,
+      "beta": 1.109,
+      "analyst_target": 297.7055,
+      "recommendation": "buy",
+      "analyst_count": 40,
+      "debt_to_equity": 102.63,
+      "current_ratio": 0.974,
+      "free_cash_flow": 106312753152
+    }
+  },
+  "MSFT": {
+    "symbol": "MSFT",
+    "score": 70.0,
+    "grade": "A",
+    "signal": "buy",
+    "updated": "2026-04-27T10:32:59.007867+00:00",
+    "price_at_score": 424.6199951171875,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 68,
+        "rationale": "Overbought RSI, positive MACD crossover, price above MAs; high volatility concerns.",
+        "bull": "Positive MACD crossover, price above all moving averages",
+        "bear": "RSI overbought, high historical volatility"
+      },
+      "fundamental": {
+        "score": 82,
+        "rationale": "Strong revenue growth, high margins, robust profitability, but elevated valuation and negative net cash.",
+        "bull": "Exceptional earnings growth and strong operating margins.",
+        "bear": "High P/E ratio and significant debt relative to equity."
+      },
+      "sentiment": {
+        "score": 75,
+        "rationale": "Strong analyst consensus and upside, low short interest. Bearish insider transactions.",
+        "bull": "Consensus strong buy with high price target upside",
+        "bear": "Bearish insider behavior"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, and debt burden.",
+        "bull": "Strong free cash flow generation",
+        "bear": "Elevated beta and substantial short interest"
+      },
+      "thesis": {
+        "score": 72,
+        "rationale": "Strong fundamentals and sentiment, but technicals and risks are concerning.",
+        "bull": "Exceptional earnings growth with robust free cash flow generation.",
+        "bear": "High valuation and significant debt burden."
+      }
+    },
+    "key_stats": {
+      "market_cap": 3155787776000,
+      "revenue_growth": 0.167,
+      "gross_margin": 0.68586,
+      "operating_margin": 0.47094002,
+      "pe_forward": 22.444601,
+      "ps_ratio": 10.3315,
+      "ev_revenue": 10.433,
+      "short_float": 0.0112,
+      "beta": 1.107,
+      "analyst_target": 576.425,
+      "recommendation": "strong_buy",
+      "analyst_count": 54,
+      "debt_to_equity": 31.539,
+      "current_ratio": 1.386,
+      "free_cash_flow": 53640626176
+    }
+  },
+  "GOOGL": {
+    "symbol": "GOOGL",
+    "score": 74.7,
+    "grade": "A",
+    "signal": "buy",
+    "updated": "2026-04-27T10:33:18.219034+00:00",
+    "price_at_score": 344.3999938964844,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 87,
+        "rationale": "Strong trend, overbought RSI, bullish MACD, high relative strength vs SPY, near 52W high.",
+        "bull": "Price above all moving averages, strong momentum (MACD bullish crossover).",
+        "bear": "RSI in overbought territory, nearing 52-week highs."
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "Strong revenue growth, high margins, robust cash position, but elevated P/E and EV/EBITDA ratios.",
+        "bull": "Revenue growth of 18% and strong profitability metrics.",
+        "bear": "High valuation multiples relative to earnings and EBITDA."
+      },
+      "sentiment": {
+        "score": 75,
+        "rationale": "Strong analyst consensus and upside, low short interest; insider selling slightly negative.",
+        "bull": "Consensus strong buy with significant price target upside",
+        "bear": "Insider transactions show net bearish sentiment"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, moderate debt. Strong liquidity and cash flow.",
+        "bull": "Strong free cash flow generation",
+        "bear": "High beta and potential for large price swings"
+      },
+      "thesis": {
+        "score": 78,
+        "rationale": "Strong fundamentals and technicals, but high valuation and insider selling temper enthusiasm.",
+        "bull": "Robust revenue growth and strong profitability metrics.",
+        "bear": "High valuation multiples and significant price volatility."
+      }
+    },
+    "key_stats": {
+      "market_cap": 4166206881792,
+      "revenue_growth": 0.18,
+      "gross_margin": 0.59652,
+      "operating_margin": 0.31568,
+      "pe_forward": 25.499796,
+      "ps_ratio": 10.342191,
+      "ev_revenue": 10.194,
+      "short_float": 0.0134000005,
+      "beta": 1.128,
+      "analyst_target": 377.29492,
+      "recommendation": "strong_buy",
+      "analyst_count": 55,
+      "debt_to_equity": 16.133,
+      "current_ratio": 2.005,
+      "free_cash_flow": 38088376320
+    }
+  },
+  "AMZN": {
+    "symbol": "AMZN",
+    "score": 73.2,
+    "grade": "A",
+    "signal": "buy",
+    "updated": "2026-04-27T10:33:35.880131+00:00",
+    "price_at_score": 263.989990234375,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 87,
+        "rationale": "Strong uptrend, overbought RSI, high relative strength vs SPY, elevated volatility.",
+        "bull": "Price above all moving averages, bullish MACD crossover",
+        "bear": "RSI in overbought territory"
+      },
+      "fundamental": {
+        "score": 72,
+        "rationale": "Strong revenue growth, high margins, but elevated valuation and negative net cash.",
+        "bull": "High revenue growth and strong profitability",
+        "bear": "Elevated P/E ratio and significant debt"
+      },
+      "sentiment": {
+        "score": 75,
+        "rationale": "Strong buy consensus, high bull ratings, low short interest. Insider selling slightly negative.",
+        "bull": "Consensus strong buy with high analyst bull ratings",
+        "bear": "Insider transactions show net bearish sentiment"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, and high debt burden.",
+        "bull": "Strong free cash flow generation",
+        "bear": "High beta and substantial leverage"
+      },
+      "thesis": {
+        "score": 78,
+        "rationale": "Strong fundamentals and sentiment, but technicals overbought and risks high.",
+        "bull": "High revenue growth and strong profitability drive upside.",
+        "bear": "Elevated valuation and significant debt pose downside risk."
+      }
+    },
+    "key_stats": {
+      "market_cap": 2839014801408,
+      "revenue_growth": 0.136,
+      "gross_margin": 0.50286,
+      "operating_margin": 0.10533,
+      "pe_forward": 27.918787,
+      "ps_ratio": 3.959994,
+      "ev_revenue": 4.03,
+      "short_float": 0.0095,
+      "beta": 1.383,
+      "analyst_target": 283.78906,
+      "recommendation": "strong_buy",
+      "analyst_count": 64,
+      "debt_to_equity": 43.435,
+      "current_ratio": 1.051,
+      "free_cash_flow": 23793125376
+    }
+  },
+  "META": {
+    "symbol": "META",
+    "score": 70.5,
+    "grade": "A",
+    "signal": "buy",
+    "updated": "2026-04-27T10:33:54.125521+00:00",
+    "price_at_score": 675.030029296875,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 72,
+        "rationale": "Overbought RSI, strong momentum, price above MAs, but high volatility and recent drawdown.",
+        "bull": "Bullish MACD crossover, price above all moving averages",
+        "bear": "RSI overbought, high historical volatility"
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "Strong revenue growth, high margins, positive FCF, but elevated P/E and debt levels.",
+        "bull": "High ROE and strong EPS growth",
+        "bear": "High debt/equity ratio and forward P/E above industry average"
+      },
+      "sentiment": {
+        "score": 75,
+        "rationale": "Strong analyst consensus and upside, low short interest. Bearish insider transactions.",
+        "bull": "Analyst consensus strong buy with significant price target upside",
+        "bear": "Insider net sentiment is bearish"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, and high debt.",
+        "bull": "Strong free cash flow generation",
+        "bear": "Elevated beta and substantial short interest"
+      },
+      "thesis": {
+        "score": 75,
+        "rationale": "Mixed signals across dimensions, strong fundamentals but high risks.",
+        "bull": "Strong revenue growth and positive FCF support upside.",
+        "bear": "High debt levels and elevated beta pose significant risk."
+      }
+    },
+    "key_stats": {
+      "market_cap": 1713562583040,
+      "revenue_growth": 0.238,
+      "gross_margin": 0.81999,
+      "operating_margin": 0.41314998,
+      "pe_forward": 18.720188,
+      "ps_ratio": 8.526629,
+      "ev_revenue": 8.514,
+      "short_float": 0.0121,
+      "beta": 1.309,
+      "analyst_target": 855.1127,
+      "recommendation": "strong_buy",
+      "analyst_count": 60,
+      "debt_to_equity": 39.164,
+      "current_ratio": 2.599,
+      "free_cash_flow": 23432374272
+    }
+  },
+  "NVDA": {
+    "symbol": "NVDA",
+    "score": 75.7,
+    "grade": "A",
+    "signal": "buy",
+    "updated": "2026-04-27T10:34:12.586134+00:00",
+    "price_at_score": 208.27000427246094,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 82,
+        "rationale": "Strong trend, overbought RSI, high relative strength vs SPY, above MAs, but elevated volatility.",
+        "bull": "Price above all moving averages, bullish MACD crossover",
+        "bear": "RSI in overbought territory, recent spike in historical volatility"
+      },
+      "fundamental": {
+        "score": 87,
+        "rationale": "High revenue growth, strong margins, robust cash position, favorable PEG ratio.",
+        "bull": "Exceptional earnings and revenue growth, leading to a low PEG ratio.",
+        "bear": "High valuation multiples relative to peers despite impressive performance."
+      },
+      "sentiment": {
+        "score": 75,
+        "rationale": "Strong analyst consensus and upside, low short interest. Insider selling slightly negative.",
+        "bull": "Analyst consensus strong buy with significant price target upside",
+        "bear": "Insider transactions show net bearish sentiment"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High beta and volatility, significant drawdown potential.",
+        "bull": "Strong free cash flow generation.",
+        "bear": "Elevated debt levels and binary earnings risk."
+      },
+      "thesis": {
+        "score": 78,
+        "rationale": "Strong fundamentals and sentiment, technicals mixed with risks.",
+        "bull": "High growth, strong margins, robust cash flow.",
+        "bear": "Overbought RSI, high valuation multiples."
+      }
+    },
+    "key_stats": {
+      "market_cap": 5061759467520,
+      "revenue_growth": 0.732,
+      "gross_margin": 0.71068,
+      "operating_margin": 0.65024,
+      "pe_forward": 18.529821,
+      "ps_ratio": 23.4408,
+      "ev_revenue": 23.2,
+      "short_float": 0.012200001,
+      "beta": 2.335,
+      "analyst_target": 268.6148,
+      "recommendation": "strong_buy",
+      "analyst_count": 56,
+      "debt_to_equity": 7.255,
+      "current_ratio": 3.905,
+      "free_cash_flow": 58128998400
+    }
+  },
+  "TSLA": {
+    "symbol": "TSLA",
+    "score": 59.0,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T10:34:30.342154+00:00",
+    "price_at_score": 376.29998779296875,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 62,
+        "rationale": "Positive trend, bullish MACD, but overbought RSI and below key MAs.",
+        "bull": "Bullish MACD crossover",
+        "bear": "Price below 50-day and 200-day SMA"
+      },
+      "fundamental": {
+        "score": 68,
+        "rationale": "Moderate revenue growth, strong cash position, but high valuation and margins below average.",
+        "bull": "Strong positive free cash flow and robust cash reserves.",
+        "bear": "High P/E ratio and relatively low operating margins."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with upside potential. Low short interest and squeeze risk.",
+        "bull": "Consensus Buy rating with positive PT upside",
+        "bear": "Insider net sentiment is bearish"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, and binary earnings risk.",
+        "bull": "Strong free cash flow generation",
+        "bear": "High debt levels and speculative trading"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions, balanced case with clear risks and opportunities.",
+        "bull": "Strong cash flow and robust reserves support growth.",
+        "bear": "High valuation and significant debt levels pose risks."
+      }
+    },
+    "key_stats": {
+      "market_cap": 1413278859264,
+      "revenue_growth": 0.158,
+      "gross_margin": 0.19065,
+      "operating_margin": 0.04203,
+      "pe_forward": 149.6532,
+      "ps_ratio": 14.439041,
+      "ev_revenue": 14.151,
+      "short_float": 0.021300001,
+      "beta": 1.915,
+      "analyst_target": 418.379,
+      "recommendation": "buy",
+      "analyst_count": 40,
+      "debt_to_equity": 18.738,
+      "current_ratio": 2.043,
+      "free_cash_flow": 5251999744
+    }
+  },
+  "AMD": {
+    "symbol": "AMD",
+    "score": 67.3,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T10:34:49.875184+00:00",
+    "price_at_score": 347.80999755859375,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 87,
+        "rationale": "Strong trend, high momentum, elevated volume, outperforming SPY, overbought RSI",
+        "bull": "Price above all MAs, bullish MACD crossover",
+        "bear": "RSI in overbought territory"
+      },
+      "fundamental": {
+        "score": 72,
+        "rationale": "High revenue growth, strong margins, positive FCF, but high P/E and EV/EBITDA.",
+        "bull": "Revenue growth of 34.1% and robust gross margin of 52.5%",
+        "bear": "High forward P/E ratio at 31.59 and EV/EBITDA of 83.10"
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with high bull ratings, but low upside to price target and insider net sell indicate caution.",
+        "bull": "High analyst buy rating (155 bulls)",
+        "bear": "Low upside to mean price target (-15.0%)"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, moderate debt.",
+        "bull": "Strong free cash flow generation.",
+        "bear": "High beta and substantial short interest."
+      },
+      "thesis": {
+        "score": 72,
+        "rationale": "Mixed signals across dimensions, strong fundamentals but overvalued technically and sentimentally cautious.",
+        "bull": "Strong revenue growth and robust margins drive continued outperformance.",
+        "bear": "High valuation metrics and significant short interest pose downside risks."
+      }
+    },
+    "key_stats": {
+      "market_cap": 567056859136,
+      "revenue_growth": 0.341,
+      "gross_margin": 0.52493,
+      "operating_margin": 0.17059,
+      "pe_forward": 31.594515,
+      "ps_ratio": 16.370474,
+      "ev_revenue": 16.182,
+      "short_float": 0.022,
+      "beta": 1.963,
+      "analyst_target": 295.76086,
+      "recommendation": "buy",
+      "analyst_count": 46,
+      "debt_to_equity": 6.359,
+      "current_ratio": 2.85,
+      "free_cash_flow": 4587250176
+    }
+  },
+  "AVGO": {
+    "symbol": "AVGO",
+    "score": 73.8,
+    "grade": "A",
+    "signal": "buy",
+    "updated": "2026-04-27T10:35:08.048383+00:00",
+    "price_at_score": 422.760009765625,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 87,
+        "rationale": "Strong trend, overbought RSI, high relative strength vs SPY, near 52W high",
+        "bull": "Price above all MAs, bullish MACD crossover",
+        "bear": "RSI in overbought territory"
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "High revenue growth, strong margins, positive FCF, but high debt and P/E.",
+        "bull": "Revenue growth of 29.5% and robust profitability metrics.",
+        "bear": "High debt levels and elevated valuation multiples."
+      },
+      "sentiment": {
+        "score": 75,
+        "rationale": "Strong analyst consensus and upside, low short interest; insider net selling.",
+        "bull": "Analyst strong buy consensus with significant price target upside",
+        "bear": "Insider transactions show a bearish trend"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, and high debt burden.",
+        "bull": "Strong free cash flow generation",
+        "bear": "Elevated beta and substantial leverage"
+      },
+      "thesis": {
+        "score": 72,
+        "rationale": "Mixed signals across dimensions, strong fundamentals vs technical overbought and high debt risks.",
+        "bull": "Strong revenue growth and robust profitability with significant analyst upside.",
+        "bear": "High valuation multiples, elevated debt levels, and insider selling."
+      }
+    },
+    "key_stats": {
+      "market_cap": 2001628430336,
+      "revenue_growth": 0.295,
+      "gross_margin": 0.76725996,
+      "operating_margin": 0.44943002,
+      "pe_forward": 23.333765,
+      "ps_ratio": 29.314144,
+      "ev_revenue": 30.074,
+      "short_float": 0.0117999995,
+      "beta": 1.253,
+      "analyst_target": 475.49295,
+      "recommendation": "strong_buy",
+      "analyst_count": 42,
+      "debt_to_equity": 82.704,
+      "current_ratio": 1.902,
+      "free_cash_flow": 25503750144
+    }
+  },
+  "QCOM": {
+    "symbol": "QCOM",
+    "score": 61.5,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T10:35:26.363482+00:00",
+    "price_at_score": 148.85000610351562,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 72,
+        "rationale": "Strong momentum, price above MAs, but overbought RSI and high volatility.",
+        "bull": "RSI bullish crossover, MACD histogram positive",
+        "bear": "Overbought RSI, price below 200-day SMA"
+      },
+      "fundamental": {
+        "score": 72,
+        "rationale": "Moderate revenue growth, strong margins, positive FCF, but high debt and overvalued P/E.",
+        "bull": "Strong profitability and consistent free cash flow generation",
+        "bear": "High debt levels and relatively high valuation compared to earnings"
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Neutral analyst consensus, low price target upside, moderate short interest, and negative insider behavior.",
+        "bull": "Analyst ratings with a slight bias towards hold",
+        "bear": "Negative insider transactions"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, moderate liquidity risks.",
+        "bull": "Strong free cash flow generation",
+        "bear": "Elevated debt levels and binary earnings risk"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions, balanced case with clear risks and opportunities.",
+        "bull": "Strong free cash flow and profitability support growth.",
+        "bear": "High debt levels and overvaluation pose significant risks."
+      }
+    },
+    "key_stats": {
+      "market_cap": 158978523136,
+      "revenue_growth": 0.05,
+      "gross_margin": 0.55101,
+      "operating_margin": 0.27473,
+      "pe_forward": 13.510435,
+      "ps_ratio": 3.5433288,
+      "ev_revenue": 3.607,
+      "short_float": 0.051,
+      "beta": 1.279,
+      "analyst_target": 150.10345,
+      "recommendation": "hold",
+      "analyst_count": 29,
+      "debt_to_equity": 64.218,
+      "current_ratio": 2.505,
+      "free_cash_flow": 10423374848
+    }
+  },
+  "INTC": {
+    "symbol": "INTC",
+    "score": 54.8,
+    "grade": "C",
+    "signal": "neutral",
+    "updated": "2026-04-27T10:35:44.641370+00:00",
+    "price_at_score": 82.54000091552734,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 87,
+        "rationale": "Strong uptrend, overbought RSI, high relative strength vs SPY, elevated volatility.",
+        "bull": "Price above all moving averages, bullish MACD crossover",
+        "bear": "RSI in overbought territory, nearing 52-week highs"
+      },
+      "fundamental": {
+        "score": 42,
+        "rationale": "Revenue growth positive, but margins negative. High debt and cash burn.",
+        "bull": "Revenue growth at 7.2% YoY",
+        "bear": "Net margin is -5.9%, indicating operational challenges"
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Neutral analyst consensus, slight insider buying, low short interest. Lack of recent news.",
+        "bull": "Insider net sentiment is bullish",
+        "bear": "Analyst ratings are mostly hold with limited upside to mean price target"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, high debt. Low liquidity risks.",
+        "bull": "Strong market cap and cash reserves.",
+        "bear": "Substantial debt burden and binary earnings risk."
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals; strong tech, weak funda and sentiment.",
+        "bull": "Revenue growth and bullish MACD suggest upside potential.",
+        "bear": "High debt and negative margins pose significant operational risks."
+      }
+    },
+    "key_stats": {
+      "market_cap": 414996824064,
+      "revenue_growth": 0.072,
+      "gross_margin": 0.372,
+      "operating_margin": 0.06879,
+      "pe_forward": 56.40952,
+      "ps_ratio": 7.7190046,
+      "ev_revenue": 8.197,
+      "short_float": 0.0287,
+      "beta": 1.349,
+      "analyst_target": 74.15488,
+      "recommendation": "hold",
+      "analyst_count": 41,
+      "debt_to_equity": 36.028,
+      "current_ratio": 2.312,
+      "free_cash_flow": -8301250048
+    }
+  },
+  "MU": {
+    "symbol": "MU",
+    "score": 71.5,
+    "grade": "A",
+    "signal": "buy",
+    "updated": "2026-04-27T10:36:03.482769+00:00",
+    "price_at_score": 496.7200012207031,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 87,
+        "rationale": "Strong trend, high momentum, above MAs, outperforming SPY, but overbought RSI.",
+        "bull": "Price above all moving averages, bullish MACD crossover",
+        "bear": "RSI in overbought territory"
+      },
+      "fundamental": {
+        "score": 87,
+        "rationale": "High revenue growth, strong margins, robust balance sheet, undervalued by PEG and P/S ratios.",
+        "bull": "Exceptional earnings growth and profitability.",
+        "bear": "High debt/equity ratio despite positive cash flow."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Strong analyst consensus and upside, low short interest; insider net selling.",
+        "bull": "Analyst strong buy consensus with significant price target upside",
+        "bear": "Insider transactions show a bearish trend"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, and binary earnings risk.",
+        "bull": "Positive free cash flow",
+        "bear": "High debt/equity ratio"
+      },
+      "thesis": {
+        "score": 75,
+        "rationale": "Strong fundamentals and technicals, but high debt and insider selling temper sentiment.",
+        "bull": "High growth, strong margins, undervalued by key ratios.",
+        "bear": "High debt/equity ratio, overbought RSI, insider net selling."
+      }
+    },
+    "key_stats": {
+      "market_cap": 560168042496,
+      "revenue_growth": 1.963,
+      "gross_margin": 0.58437,
+      "operating_margin": 0.67624,
+      "pe_forward": 4.9144373,
+      "ps_ratio": 9.638294,
+      "ev_revenue": 9.573,
+      "short_float": 0.0323,
+      "beta": 1.606,
+      "analyst_target": 533.725,
+      "recommendation": "strong_buy",
+      "analyst_count": 40,
+      "debt_to_equity": 14.902,
+      "current_ratio": 2.897,
+      "free_cash_flow": 2893499904
+    }
+  },
+  "TSM": {
+    "symbol": "TSM",
+    "score": 78.8,
+    "grade": "A",
+    "signal": "buy",
+    "updated": "2026-04-27T10:36:22.159025+00:00",
+    "price_at_score": 402.4599914550781,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 82,
+        "rationale": "Strong trend, overbought RSI, high volume, outperforming SPY, near 52W high",
+        "bull": "Price above all MAs, bullish MACD crossover",
+        "bear": "Overbought RSI, nearing 52W high"
+      },
+      "fundamental": {
+        "score": 87,
+        "rationale": "High revenue growth, strong margins, robust cash position, favorable PEG ratio.",
+        "bull": "Exceptional earnings growth and profitability.",
+        "bear": "High debt/equity ratio and premium valuation."
+      },
+      "sentiment": {
+        "score": 85,
+        "rationale": "Strong analyst consensus, high upside potential, low short interest.",
+        "bull": "Consensus strong buy with significant price target upside",
+        "bear": "No recent headlines or analyst downgrades"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, moderate debt. Strong liquidity and cash flow.",
+        "bull": "Strong free cash flow and market liquidity",
+        "bear": "High beta and substantial price volatility"
+      },
+      "thesis": {
+        "score": 85,
+        "rationale": "Strong fundamentals and sentiment, technicals show strength but caution.",
+        "bull": "High growth, strong margins, robust cash flow.",
+        "bear": "Overbought conditions, high volatility, premium valuation."
+      }
+    },
+    "key_stats": {
+      "market_cap": 2087318585344,
+      "revenue_growth": 0.351,
+      "gross_margin": 0.61873,
+      "operating_margin": 0.58105,
+      "pe_forward": 20.861303,
+      "ps_ratio": 0.5086179,
+      "ev_revenue": 1.976,
+      "short_float": 0.0053,
+      "beta": 1.251,
+      "analyst_target": 463.4514,
+      "recommendation": "strong_buy",
+      "analyst_count": 18,
+      "debt_to_equity": 17.131,
+      "current_ratio": 2.488,
+      "free_cash_flow": 721560469504
+    }
+  },
+  "ASML": {
+    "symbol": "ASML",
+    "score": 77.3,
+    "grade": "A",
+    "signal": "buy",
+    "updated": "2026-04-27T10:36:39.855395+00:00",
+    "price_at_score": 1457.699951171875,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 78,
+        "rationale": "Strong trend, bullish momentum, high relative strength vs SPY, near top of 52W range.",
+        "bull": "Price above all MAs, bullish MACD crossover",
+        "bear": "RSI overbought, nearing 52-week highs"
+      },
+      "fundamental": {
+        "score": 87,
+        "rationale": "High revenue growth, strong margins, robust cash position, favorable PEG ratio.",
+        "bull": "Exceptional earnings growth and profitability.",
+        "bear": "High valuation multiples relative to peers."
+      },
+      "sentiment": {
+        "score": 85,
+        "rationale": "Strong buy consensus, high analyst upside, low short interest.",
+        "bull": "Consensus strong buy with significant price target upside",
+        "bear": "No recent negative headlines or insider activity"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdown potential, moderate liquidity risks.",
+        "bull": "Strong free cash flow generation",
+        "bear": "Earnings binary event risk"
+      },
+      "thesis": {
+        "score": 82,
+        "rationale": "Strong fundamentals and sentiment, technicals support but overbought.",
+        "bull": "Exceptional growth with strong cash flows and robust margins.",
+        "bear": "High valuation and potential for significant drawdown."
+      }
+    },
+    "key_stats": {
+      "market_cap": 561823285248,
+      "revenue_growth": 0.132,
+      "gross_margin": 0.52603,
+      "operating_margin": 0.36020002,
+      "pe_forward": 30.682827,
+      "ps_ratio": 16.674927,
+      "ev_revenue": 16.506,
+      "short_float": 0.0019,
+      "beta": 1.382,
+      "analyst_target": 1663.4292,
+      "recommendation": "strong_buy",
+      "analyst_count": 15,
+      "debt_to_equity": 12.989,
+      "current_ratio": 1.36,
+      "free_cash_flow": 8243274752
+    }
+  },
+  "LRCX": {
+    "symbol": "LRCX",
+    "score": 71.0,
+    "grade": "A",
+    "signal": "buy",
+    "updated": "2026-04-27T10:36:58.803030+00:00",
+    "price_at_score": 267.7799987792969,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 78,
+        "rationale": "Strong trend, overbought RSI, high relative strength vs SPY, elevated volatility.",
+        "bull": "Price above all moving averages, bullish MACD crossover",
+        "bear": "Overbought RSI, approaching upper Bollinger Band"
+      },
+      "fundamental": {
+        "score": 82,
+        "rationale": "Strong revenue growth, high margins, robust cash position, and favorable PEG ratio.",
+        "bull": "Revenue growth of 23.8% and earnings growth of 40.8%",
+        "bear": "High EV/EBITDA multiple at 42.54"
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with upside potential, but insider net sentiment is bearish.",
+        "bull": "Strong analyst buy recommendation and price target upside",
+        "bear": "Insider net sentiment is bearish"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, moderate liquidity risks.",
+        "bull": "Positive free cash flow and manageable short interest.",
+        "bear": "High beta, substantial debt, and binary earnings risk."
+      },
+      "thesis": {
+        "score": 75,
+        "rationale": "Mixed signals across dimensions, strong fundamentals but technicals overbought.",
+        "bull": "Strong revenue and earnings growth, positive analyst sentiment.",
+        "bear": "High valuation multiples, insider bearishness."
+      }
+    },
+    "key_stats": {
+      "market_cap": 334877917184,
+      "revenue_growth": 0.238,
+      "gross_margin": 0.49979,
+      "operating_margin": 0.35042998,
+      "pe_forward": 34.51369,
+      "ps_ratio": 15.445085,
+      "ev_revenue": 15.398,
+      "short_float": 0.0233,
+      "beta": 1.79,
+      "analyst_target": 305.96774,
+      "recommendation": "buy",
+      "analyst_count": 31,
+      "debt_to_equity": 35.282,
+      "current_ratio": 2.536,
+      "free_cash_flow": 4352341504
+    }
+  },
+  "KLAC": {
+    "symbol": "KLAC",
+    "score": 66.8,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T10:37:17.152235+00:00",
+    "price_at_score": 1935.0,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 87,
+        "rationale": "Strong trend, high momentum, elevated RSI, bullish MACD, outperforming SPY, high volume.",
+        "bull": "Price above all moving averages, strong upward momentum (MACD, RSI).",
+        "bear": "Overbought condition (RSI), nearing upper Bollinger Band."
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "Strong revenue growth, high margins, robust profitability, but elevated valuation and negative net cash.",
+        "bull": "High earnings growth and strong operating margins.",
+        "bear": "Elevated P/E ratios and negative net cash position."
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Neutral analyst consensus, low short interest, no recent news. Bearish insider transactions.",
+        "bull": "Buy consensus among analysts",
+        "bear": "Bearish insider behavior"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, and high debt burden.",
+        "bull": "Strong free cash flow generation",
+        "bear": "Elevated beta and substantial short interest"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions, strong fundamentals but technicals overbought.",
+        "bull": "Strong revenue growth and robust profitability.",
+        "bear": "High valuation and negative net cash position."
+      }
+    },
+    "key_stats": {
+      "market_cap": 254244175872,
+      "revenue_growth": 0.072,
+      "gross_margin": 0.61574,
+      "operating_margin": 0.41313,
+      "pe_forward": 40.09706,
+      "ps_ratio": 19.94915,
+      "ev_revenue": 19.972,
+      "short_float": 0.028399998,
+      "beta": 1.435,
+      "analyst_target": 1709.2759,
+      "recommendation": "buy",
+      "analyst_count": 29,
+      "debt_to_equity": 111.778,
+      "current_ratio": 2.828,
+      "free_cash_flow": 3222999808
+    }
+  },
+  "AMAT": {
+    "symbol": "AMAT",
+    "score": 68.9,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:31:25.831612+00:00",
+    "price_at_score": 417.0400085449219,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 82,
+        "rationale": "Strong trend, overbought RSI, high relative strength vs SPY, elevated volatility.",
+        "bull": "Price above all moving averages, bullish MACD crossover",
+        "bear": "RSI in overbought territory"
+      },
+      "fundamental": {
+        "score": 72,
+        "rationale": "Strong margins, high ROE, positive FCF; overvalued by P/E and EV/EBITDA.",
+        "bull": "High profitability with strong cash flow generation",
+        "bear": "Revenue decline and relatively high valuation metrics"
+      },
+      "sentiment": {
+        "score": 62,
+        "rationale": "Analyst consensus is buy with upside potential, but insider net sentiment is bearish.",
+        "bull": "Strong analyst buy recommendation and price target upside",
+        "bear": "Net negative insider transactions"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, moderate debt. Strong liquidity and cash flow.",
+        "bull": "Strong free cash flow generation",
+        "bear": "High beta and volatility expose to market downturns"
+      },
+      "thesis": {
+        "score": 75,
+        "rationale": "Mixed signals across dimensions, strong fundamentals but high valuation and risks.",
+        "bull": "Strong profitability and cash flow generation with positive analyst sentiment.",
+        "bear": "Overvalued by metrics, insider bearishness, and exposure to market volatility."
+      }
+    },
+    "key_stats": {
+      "market_cap": 331022598144,
+      "revenue_growth": -0.021,
+      "gross_margin": 0.48724,
+      "operating_margin": 0.29892,
+      "pe_forward": 29.643385,
+      "ps_ratio": 11.732566,
+      "ev_revenue": 11.684,
+      "short_float": 0.0172,
+      "beta": 1.637,
+      "analyst_target": 422.96875,
+      "recommendation": "buy",
+      "analyst_count": 32,
+      "debt_to_equity": 33.108,
+      "current_ratio": 2.715,
+      "free_cash_flow": 4341749760
+    }
+  },
+  "TXN": {
+    "symbol": "TXN",
+    "score": 66.8,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:31:43.105618+00:00",
+    "price_at_score": 277.1400146484375,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 87,
+        "rationale": "Strong uptrend, high momentum, elevated RSI, positive MACD crossover, above Bollinger Bands.",
+        "bull": "Price well above all moving averages, strong bullish MACD crossover.",
+        "bear": "RSI overbought, nearing 52-week highs."
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "Strong revenue growth, high margins, but elevated valuation and debt.",
+        "bull": "Revenue growth of 18.6% and robust profitability metrics.",
+        "bear": "High P/E ratio and significant net debt position."
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Neutral analyst consensus, low short interest, no recent news. Bearish insider transactions.",
+        "bull": "Buy consensus from analysts",
+        "bear": "Bearish insider behavior"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "Moderate volatility, manageable liquidity, high debt. Earnings binary risk.",
+        "bull": "Positive free cash flow",
+        "bear": "High debt/equity ratio"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals; strong tech and fundamental, but high valuation and debt.",
+        "bull": "Strong revenue growth and robust profitability.",
+        "bear": "High P/E ratio and significant net debt position."
+      }
+    },
+    "key_stats": {
+      "market_cap": 252224716800,
+      "revenue_growth": 0.186,
+      "gross_margin": 0.57322,
+      "operating_margin": 0.37824002,
+      "pe_forward": 30.328066,
+      "ps_ratio": 13.679613,
+      "ev_revenue": 14.165,
+      "short_float": 0.0212,
+      "beta": 0.994,
+      "analyst_target": 272.75,
+      "recommendation": "buy",
+      "analyst_count": 32,
+      "debt_to_equity": 83.741,
+      "current_ratio": 4.456,
+      "free_cash_flow": 1068249984
+    }
+  },
+  "MRVL": {
+    "symbol": "MRVL",
+    "score": 66.1,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:32:01.248438+00:00",
+    "price_at_score": 164.30999755859375,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 87,
+        "rationale": "Strong trend, high momentum, elevated RSI, positive MACD crossover, strong relative performance vs SPY.",
+        "bull": "Price above all moving averages, bullish MACD crossover",
+        "bear": "RSI overbought (>95), nearing 52-week highs"
+      },
+      "fundamental": {
+        "score": 72,
+        "rationale": "Strong revenue growth and margins, but high valuation and debt.",
+        "bull": "Revenue growth of 22.1% and robust gross margin of 51.0%",
+        "bear": "High P/E ratio and significant net debt position"
+      },
+      "sentiment": {
+        "score": 62,
+        "rationale": "Strong analyst consensus and high bull ratings offset by negative insider behavior and low price target upside.",
+        "bull": "Strong buy consensus from analysts",
+        "bear": "Negative net sentiment from insider transactions"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, moderate liquidity issues.",
+        "bull": "Positive free cash flow and manageable short interest.",
+        "bear": "High beta, substantial debt, and binary earnings risk."
+      },
+      "thesis": {
+        "score": 68,
+        "rationale": "Mixed signals across dimensions, strong fundamentals offset by high valuation and risks.",
+        "bull": "Strong revenue growth and robust margins drive upside potential.",
+        "bear": "High P/E ratio, significant debt, and overbought technicals pose downside risk."
+      }
+    },
+    "key_stats": {
+      "market_cap": 143682224128,
+      "revenue_growth": 0.221,
+      "gross_margin": 0.51023996,
+      "operating_margin": 0.18655,
+      "pe_forward": 30.289957,
+      "ps_ratio": 17.53377,
+      "ev_revenue": 17.793,
+      "short_float": 0.039,
+      "beta": 1.822,
+      "analyst_target": 128.36064,
+      "recommendation": "strong_buy",
+      "analyst_count": 39,
+      "debt_to_equity": 33.479,
+      "current_ratio": 2.006,
+      "free_cash_flow": 1442787456
+    }
+  },
+  "ON": {
+    "symbol": "ON",
+    "score": 55.9,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:32:19.197308+00:00",
+    "price_at_score": 98.4000015258789,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 82,
+        "rationale": "Strong uptrend, bullish momentum, high relative strength vs SPY, but elevated volatility.",
+        "bull": "Price above all MAs, bullish MACD crossover",
+        "bear": "High historical volatility, nearing upper Bollinger Band"
+      },
+      "fundamental": {
+        "score": 42,
+        "rationale": "Revenue decline, weak margins, high debt, overvalued P/E but good forward PEG.",
+        "bull": "Positive forward PEG ratio suggests undervaluation relative to future growth.",
+        "bear": "High debt levels and negative revenue growth indicate financial strain."
+      },
+      "sentiment": {
+        "score": 42,
+        "rationale": "Moderate analyst buy consensus, low price target upside, high short interest, and negative insider behavior.",
+        "bull": "Analyst consensus is moderately bullish with a 'buy' recommendation.",
+        "bear": "Negative insider sentiment with more sells than buys over the past year."
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, and high debt.",
+        "bull": "Positive free cash flow indicates financial stability.",
+        "bear": "High short interest and binary earnings event."
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals; technicals strong but fundamentals weak.",
+        "bull": "Positive forward PEG and bullish MACD suggest undervaluation.",
+        "bear": "High debt, negative revenue growth, and high short interest."
+      }
+    },
+    "key_stats": {
+      "market_cap": 38703411200,
+      "revenue_growth": -0.112,
+      "gross_margin": 0.38321,
+      "operating_margin": 0.19136,
+      "pe_forward": 24.281847,
+      "ps_ratio": 6.455518,
+      "ev_revenue": 6.588,
+      "short_float": 0.1046,
+      "beta": 1.524,
+      "analyst_target": 72.55172,
+      "recommendation": "buy",
+      "analyst_count": 29,
+      "debt_to_equity": 42.294,
+      "current_ratio": 4.522,
+      "free_cash_flow": 1560125056
+    }
+  },
+  "SWKS": {
+    "symbol": "SWKS",
+    "score": 60.5,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:32:36.695347+00:00",
+    "price_at_score": 63.650001525878906,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 78,
+        "rationale": "Strong momentum, price above MAs, outperforming SPY; overbought RSI, near 52W high.",
+        "bull": "RSI bullish crossover, MACD histogram positive",
+        "bear": "Overbought RSI, nearing 52-week high"
+      },
+      "fundamental": {
+        "score": 62,
+        "rationale": "Revenue decline, weak margins, but strong cash position and undervalued P/E.",
+        "bull": "Positive forward P/E ratio suggests potential for growth recovery.",
+        "bear": "Significant YoY earnings decline indicates current operational challenges."
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Neutral analyst consensus, moderate upside potential, high short interest, and net insider selling.",
+        "bull": "Moderate price target upside",
+        "bear": "High short interest and significant insider selling"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant short interest, and binary earnings risk.",
+        "bull": "Positive free cash flow and manageable debt levels.",
+        "bear": "Earnings uncertainty and high short interest pressure."
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions, balanced asymmetry.",
+        "bull": "Positive forward P/E and strong cash position suggest recovery potential.",
+        "bear": "High short interest and significant earnings decline indicate operational challenges."
+      }
+    },
+    "key_stats": {
+      "market_cap": 9573340160,
+      "revenue_growth": -0.031,
+      "gross_margin": 0.41132,
+      "operating_margin": 0.14709,
+      "pe_forward": 12.749968,
+      "ps_ratio": 2.361572,
+      "ev_revenue": 2.271,
+      "short_float": 0.2346,
+      "beta": 1.3,
+      "analyst_target": 66.94737,
+      "recommendation": "hold",
+      "analyst_count": 19,
+      "debt_to_equity": 20.714,
+      "current_ratio": 2.396,
+      "free_cash_flow": 1099687552
+    }
+  },
+  "ARM": {
+    "symbol": "ARM",
+    "score": 61.2,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:32:55.307321+00:00",
+    "price_at_score": 234.80999755859375,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 87,
+        "rationale": "Strong uptrend, high momentum, elevated volume, outperforming SPY, overbought RSI",
+        "bull": "Price above all MAs, bullish MACD crossover",
+        "bear": "RSI in overbought territory"
+      },
+      "fundamental": {
+        "score": 68,
+        "rationale": "High revenue growth, strong margins, but overvalued with negative earnings growth.",
+        "bull": "Revenue growth at 26.3% and gross margin of 97.5%",
+        "bear": "Negative earnings growth and high P/E ratios"
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Neutral analyst consensus, moderate short squeeze potential, lack of recent news and insider activity.",
+        "bull": "Analyst buy ratings, positive price target upside expectation.",
+        "bear": "High short interest, negative insider sentiment."
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, and binary earnings risk.",
+        "bull": "Positive free cash flow",
+        "bear": "High debt/equity ratio and substantial short interest"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions, strong fundamentals vs. technical overbought and high valuation risks.",
+        "bull": "High revenue growth and robust margins suggest continued outperformance.",
+        "bear": "Overvalued with negative earnings growth and significant short interest."
+      }
+    },
+    "key_stats": {
+      "market_cap": 249367887872,
+      "revenue_growth": 0.263,
+      "gross_margin": 0.97495,
+      "operating_margin": 0.15378,
+      "pe_forward": 109.51448,
+      "ps_ratio": 53.386402,
+      "ev_revenue": 52.727,
+      "short_float": 0.1146,
+      "beta": 3.338,
+      "analyst_target": 169.58861,
+      "recommendation": "buy",
+      "analyst_count": 36,
+      "debt_to_equity": 5.912,
+      "current_ratio": 5.427,
+      "free_cash_flow": 824750016
+    }
+  },
+  "SMCI": {
+    "symbol": "SMCI",
+    "score": 55.9,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:33:13.039434+00:00",
+    "price_at_score": 29.079999923706055,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 68,
+        "rationale": "Overbought RSI, bullish MACD crossover, price above MAs; high volatility concerns.",
+        "bull": "Price above all moving averages, bullish MACD crossover",
+        "bear": "RSI overbought, high historical volatility"
+      },
+      "fundamental": {
+        "score": 68,
+        "rationale": "High revenue growth, strong PEG ratio, but thin margins and negative net cash.",
+        "bull": "Revenue growth of 123.4% and a favorable PEG ratio suggest potential for continued expansion.",
+        "bear": "Negative net cash position and low gross margin indicate financial strain."
+      },
+      "sentiment": {
+        "score": 42,
+        "rationale": "Moderate analyst consensus, low institutional interest, high short interest, and recent insider selling.",
+        "bull": "Price target upside of 14.2%",
+        "bear": "Recent insider selling and moderate short squeeze potential"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, high debt, and substantial short interest.",
+        "bull": "Positive free cash flow",
+        "bear": "Earnings binary event risk"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions, balanced asymmetry.",
+        "bull": "High revenue growth and positive FCF suggest expansion potential.",
+        "bear": "Overbought technicals and negative net cash indicate financial strain."
+      }
+    },
+    "key_stats": {
+      "market_cap": 17462013952,
+      "revenue_growth": 1.234,
+      "gross_margin": 0.0802,
+      "operating_margin": 0.0374,
+      "pe_forward": 9.734217,
+      "ps_ratio": 0.62237406,
+      "ev_revenue": 0.662,
+      "short_float": 0.1933,
+      "beta": 1.629,
+      "analyst_target": 33.2,
+      "recommendation": "hold",
+      "analyst_count": 15,
+      "debt_to_equity": 75.28,
+      "current_ratio": 1.697,
+      "free_cash_flow": 103480000
+    }
+  },
+  "CRM": {
+    "symbol": "CRM",
+    "score": 59.5,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:33:30.511881+00:00",
+    "price_at_score": 178.16000366210938,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 42,
+        "rationale": "Price below MAs, RSI neutral, MACD bullish crossover but weak volume.",
+        "bull": "MACD Histogram shows a bullish crossover",
+        "bear": "Price is significantly below all moving averages"
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "Strong revenue growth, high margins, positive FCF, but elevated debt and low liquidity ratios.",
+        "bull": "Revenue growth outpaces industry average with robust gross and operating margins.",
+        "bear": "High debt levels and weak balance sheet metrics pose financial risk."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with high upside, moderate short squeeze potential; insider behavior slightly negative.",
+        "bull": "Strong analyst buy recommendation and significant price target upside",
+        "bear": "High short interest ratio indicating bearish sentiment among short sellers"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, and high debt.",
+        "bull": "Strong free cash flow generation",
+        "bear": "Substantial short interest and binary earnings event"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions, strong fundamentals vs. technical and sentiment concerns.",
+        "bull": "Strong revenue growth and robust free cash flow generation.",
+        "bear": "High debt levels and significant short interest pose financial risks."
+      }
+    },
+    "key_stats": {
+      "market_cap": 145744461824,
+      "revenue_growth": 0.121,
+      "gross_margin": 0.77676004,
+      "operating_margin": 0.19239001,
+      "pe_forward": 11.930432,
+      "ps_ratio": 3.5098007,
+      "ev_revenue": 4.156,
+      "short_float": 0.1047,
+      "beta": 1.288,
+      "analyst_target": 268.8725,
+      "recommendation": "buy",
+      "analyst_count": 52,
+      "debt_to_equity": 29.947,
+      "current_ratio": 0.76,
+      "free_cash_flow": 16366999552
+    }
+  },
+  "ORCL": {
+    "symbol": "ORCL",
+    "score": 60.5,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:33:48.710522+00:00",
+    "price_at_score": 173.27999877929688,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 62,
+        "rationale": "Positive trend, strong momentum, high relative strength vs SPY; above MAs but near 52W low.",
+        "bull": "Bullish MACD crossover, price above all moving averages",
+        "bear": "RSI overbought, nearing upper Bollinger Band"
+      },
+      "fundamental": {
+        "score": 72,
+        "rationale": "Strong revenue growth, high margins, but negative free cash flow and high debt.",
+        "bull": "Revenue growth of 21.7% and strong profitability metrics.",
+        "bear": "Negative free cash flow and significant net debt position."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with high upside potential. Low short interest and squeeze potential.",
+        "bull": "Strong buy ratings from analysts, significant price target upside",
+        "bear": "Insider net sentiment is bearish"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, high debt, low cash flow.",
+        "bull": "Strong market cap and liquidity can support price stability.",
+        "bear": "Severe financial leverage and negative free cash flow."
+      },
+      "thesis": {
+        "score": 68,
+        "rationale": "Mixed signals across dimensions, strong fundamentals vs. technical overbought and financial risks.",
+        "bull": "Strong revenue growth and profitability support upside potential.",
+        "bear": "Negative free cash flow and high debt pose significant financial risk."
+      }
+    },
+    "key_stats": {
+      "market_cap": 498361270272,
+      "revenue_growth": 0.217,
+      "gross_margin": 0.67084,
+      "operating_margin": 0.32676,
+      "pe_forward": 21.575264,
+      "ps_ratio": 7.777659,
+      "ev_revenue": 9.784,
+      "short_float": 0.0171,
+      "beta": 1.597,
+      "analyst_target": 243.22795,
+      "recommendation": "buy",
+      "analyst_count": 39,
+      "debt_to_equity": 415.265,
+      "current_ratio": 1.347,
+      "free_cash_flow": -22298499072
+    }
+  },
+  "ADBE": {
+    "symbol": "ADBE",
+    "score": 67.8,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:34:07.114947+00:00",
+    "price_at_score": 245.44000244140625,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 62,
+        "rationale": "Positive short-term trend, bullish MACD crossover; overbought RSI, below key MAs.",
+        "bull": "Price above 20-day SMA, bullish MACD crossover",
+        "bear": "Below 50-day and 200-day SMAs, in oversold territory of the year"
+      },
+      "fundamental": {
+        "score": 87,
+        "rationale": "Strong revenue growth, high margins, positive FCF, low PEG, but debt/equity and liquidity ratios are concerning.",
+        "bull": "High revenue growth and profitability with a favorable PEG ratio.",
+        "bear": "Debt/Equity is relatively high and liquidity ratios suggest potential cash flow concerns."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with significant upside, but insider net sentiment is bearish.",
+        "bull": "Strong analyst buy recommendation and price target upside",
+        "bear": "Insider net sentiment is bearish"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, moderate liquidity risks.",
+        "bull": "Strong free cash flow generation",
+        "bear": "High debt levels and binary earnings risk"
+      },
+      "thesis": {
+        "score": 72,
+        "rationale": "Mixed signals across dimensions, strong fundamentals but technicals and sentiment mixed.",
+        "bull": "High growth, positive FCF, analyst upside.",
+        "bear": "High debt, insider bearishness."
+      }
+    },
+    "key_stats": {
+      "market_cap": 99206848512,
+      "revenue_growth": 0.12,
+      "gross_margin": 0.89396006,
+      "operating_margin": 0.38762,
+      "pe_forward": 9.301793,
+      "ps_ratio": 4.057042,
+      "ev_revenue": 4.048,
+      "short_float": 0.040700004,
+      "beta": 1.518,
+      "analyst_target": 329.27853,
+      "recommendation": "buy",
+      "analyst_count": 34,
+      "debt_to_equity": 58.34,
+      "current_ratio": 0.912,
+      "free_cash_flow": 9321374720
+    }
+  },
+  "NOW": {
+    "symbol": "NOW",
+    "score": 58.5,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:34:24.337783+00:00",
+    "price_at_score": 90.16999816894531,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 42,
+        "rationale": "Price below all MAs, RSI neutral, MACD bullish crossover but weak. Volume spike above average.",
+        "bull": "MACD Histogram showing bullish crossover",
+        "bear": "All moving averages are above price"
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "Strong revenue growth, healthy margins, positive FCF, but high P/E and EV/EBITDA.",
+        "bull": "Revenue growth of 22.1% and robust free cash flow generation.",
+        "bear": "High valuation multiples relative to earnings and EBITDA."
+      },
+      "sentiment": {
+        "score": 75,
+        "rationale": "Strong analyst consensus and upside potential, low short interest.",
+        "bull": "Consensus strong buy with high price target mean.",
+        "bear": "Insider net sentiment is bearish."
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, low liquidity, high debt.",
+        "bull": "Positive free cash flow",
+        "bear": "Earnings binary event risk"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals; strong fundamentals and sentiment vs. high valuation and technical weakness.",
+        "bull": "Strong revenue growth and positive FCF suggest continued value creation.",
+        "bear": "High valuations and significant earnings risk pose substantial downside."
+      }
+    },
+    "key_stats": {
+      "market_cap": 92993044480,
+      "revenue_growth": 0.221,
+      "gross_margin": 0.76562,
+      "operating_margin": 0.13342,
+      "pe_forward": 18.025745,
+      "ps_ratio": 6.661393,
+      "ev_revenue": 6.464,
+      "short_float": 0.0378,
+      "beta": 1.005,
+      "analyst_target": 143.34372,
+      "recommendation": "strong_buy",
+      "analyst_count": 43,
+      "debt_to_equity": 20.728,
+      "current_ratio": 0.845,
+      "free_cash_flow": 5108125184
+    }
+  },
+  "PLTR": {
+    "symbol": "PLTR",
+    "score": 62.5,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:34:41.449483+00:00",
+    "price_at_score": 143.08999633789062,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 62,
+        "rationale": "Positive MACD, near 50-day SMA; weak RSI, high volatility.",
+        "bull": "Bullish MACD crossover",
+        "bear": "Price below 200-day SMA"
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "High revenue growth, strong margins, robust cash position; overvalued relative to earnings.",
+        "bull": "Revenue growth and profitability are exceptionally high.",
+        "bear": "Valuation metrics indicate the stock may be overpriced."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with significant upside, low short interest and squeeze potential.",
+        "bull": "Consensus Buy rating with high price target mean",
+        "bear": "High insider selling ratio over the past year"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, moderate liquidity risks.",
+        "bull": "Positive free cash flow and manageable debt levels.",
+        "bear": "Earnings binary event risk and high short interest."
+      },
+      "thesis": {
+        "score": 72,
+        "rationale": "Mixed signals with strong fundamentals but high valuation and risks.",
+        "bull": "High growth, profitability, and positive sentiment suggest upside potential.",
+        "bear": "Overvaluation and significant short interest pose substantial downside risk."
+      }
+    },
+    "key_stats": {
+      "market_cap": 342224863232,
+      "revenue_growth": 0.7,
+      "gross_margin": 0.82366997,
+      "operating_margin": 0.40901002,
+      "pe_forward": 76.82767,
+      "ps_ratio": 76.46722,
+      "ev_revenue": 74.937,
+      "short_float": 0.024300002,
+      "beta": 1.674,
+      "analyst_target": 186.4672,
+      "recommendation": "buy",
+      "analyst_count": 25,
+      "debt_to_equity": 3.063,
+      "current_ratio": 7.11,
+      "free_cash_flow": 1260918400
+    }
+  },
+  "SNOW": {
+    "symbol": "SNOW",
+    "score": 54.5,
+    "grade": "C",
+    "signal": "neutral",
+    "updated": "2026-04-27T11:34:58.963337+00:00",
+    "price_at_score": 140.32000732421875,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 42,
+        "rationale": "Price below all MAs, RSI neutral, bullish MACD crossover but high volatility and drawdown.",
+        "bull": "Bullish MACD crossover",
+        "bear": "All moving averages above price"
+      },
+      "fundamental": {
+        "score": 62,
+        "rationale": "High revenue growth, positive FCF, but negative margins and high PEG suggest overvaluation.",
+        "bull": "30%+ YoY revenue growth indicates strong market demand.",
+        "bear": "Negative operating margin and high P/E ratio indicate potential overvaluation."
+      },
+      "sentiment": {
+        "score": 75,
+        "rationale": "Strong analyst consensus and upside, low short interest; insider selling slightly negative.",
+        "bull": "Analyst strong buy consensus with significant price target upside",
+        "bear": "Insider transactions show a net bearish sentiment"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, high debt. Low liquidity risks.",
+        "bull": "Positive free cash flow",
+        "bear": "High beta and short interest"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions; strong fundamentals vs. technical and sentiment concerns.",
+        "bull": "High revenue growth and positive FCF suggest robust demand and profitability.",
+        "bear": "Overvaluation risks and high volatility could lead to significant drawdowns."
+      }
+    },
+    "key_stats": {
+      "market_cap": 48508624896,
+      "revenue_growth": 0.301,
+      "gross_margin": 0.67169,
+      "operating_margin": -0.33236998,
+      "pe_forward": 57.68504,
+      "ps_ratio": 10.356359,
+      "ev_revenue": 10.069,
+      "short_float": 0.0535,
+      "beta": 1.228,
+      "analyst_target": 232.73701,
+      "recommendation": "strong_buy",
+      "analyst_count": 47,
+      "debt_to_equity": 142.462,
+      "current_ratio": 1.299,
+      "free_cash_flow": 1587485568
+    }
+  },
+  "INTU": {
+    "symbol": "INTU",
+    "score": 61.5,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:35:16.229211+00:00",
+    "price_at_score": 395.95001220703125,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 42,
+        "rationale": "Price below MAs, RSI neutral, bullish MACD crossover, low volume, high volatility.",
+        "bull": "Bullish MACD crossover",
+        "bear": "Price below all moving averages"
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "Strong revenue growth, high margins, positive FCF, but elevated debt and P/E ratios.",
+        "bull": "Revenue growth of 17.4% and robust profitability metrics.",
+        "bear": "High Debt/Equity ratio and relatively high valuation multiples."
+      },
+      "sentiment": {
+        "score": 75,
+        "rationale": "Strong analyst consensus and upside potential, low short interest.",
+        "bull": "Consensus strong buy with significant price target upside",
+        "bear": "Insider net sentiment is bearish"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, and high debt burden.",
+        "bull": "Strong free cash flow generation",
+        "bear": "Elevated short interest and binary earnings event"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions, strong fundamentals vs. technicals and sentiment.",
+        "bull": "Strong revenue growth and robust profitability metrics suggest long-term value.",
+        "bear": "High debt levels and overvaluation pose significant risks."
+      }
+    },
+    "key_stats": {
+      "market_cap": 110182629376,
+      "revenue_growth": 0.174,
+      "gross_margin": 0.80896,
+      "operating_margin": 0.18383,
+      "pe_forward": 14.95123,
+      "ps_ratio": 5.4760017,
+      "ev_revenue": 5.637,
+      "short_float": 0.039,
+      "beta": 1.213,
+      "analyst_target": 594.1097,
+      "recommendation": "strong_buy",
+      "analyst_count": 32,
+      "debt_to_equity": 36.148,
+      "current_ratio": 1.323,
+      "free_cash_flow": 5301374976
+    }
+  },
+  "IBM": {
+    "symbol": "IBM",
+    "score": 60.0,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:35:33.819861+00:00",
+    "price_at_score": 231.97999572753906,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 42,
+        "rationale": "Price below MAs, RSI neutral, MACD bearish, volume spike, underperformed SPY, near low of 52W range.",
+        "bull": "Volume spike could indicate buying interest",
+        "bear": "Bearish MACD crossover and price below all moving averages"
+      },
+      "fundamental": {
+        "score": 72,
+        "rationale": "Solid revenue growth, strong margins, but high debt and valuation concerns.",
+        "bull": "Revenue growth and profitability are robust.",
+        "bear": "High debt levels and elevated P/E ratios."
+      },
+      "sentiment": {
+        "score": 75,
+        "rationale": "Analyst consensus is buy with significant upside, positive insider transactions. Low short interest and no recent news.",
+        "bull": "Strong analyst buy recommendation with high price target upside",
+        "bear": "No recent headlines or institutional ownership data available"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "Moderate volatility, high debt, low liquidity risks.",
+        "bull": "Positive free cash flow and large market cap.",
+        "bear": "High debt/equity ratio and binary earnings risk."
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions, strong fundamentals vs. technicals.",
+        "bull": "Strong revenue growth and profitability with positive analyst targets.",
+        "bear": "High debt levels and overvaluation concerns."
+      }
+    },
+    "key_stats": {
+      "market_cap": 218034585600,
+      "revenue_growth": 0.095,
+      "gross_margin": 0.58358,
+      "operating_margin": 0.13809,
+      "pe_forward": 17.286423,
+      "ps_ratio": 3.1640027,
+      "ev_revenue": 4.007,
+      "short_float": 0.026199998,
+      "beta": 0.685,
+      "analyst_target": 284.1765,
+      "recommendation": "buy",
+      "analyst_count": 20,
+      "debt_to_equity": 211.169,
+      "current_ratio": 0.796,
+      "free_cash_flow": 13080750080
+    }
+  },
+  "DELL": {
+    "symbol": "DELL",
+    "score": 64.0,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:35:51.969765+00:00",
+    "price_at_score": 216.08999633789062,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 82,
+        "rationale": "Strong trend, overbought RSI, high relative strength vs SPY, but volume below average.",
+        "bull": "Price above all moving averages, bullish MACD crossover",
+        "bear": "Overbought RSI, recent price near 52W high"
+      },
+      "fundamental": {
+        "score": 72,
+        "rationale": "Strong revenue growth, positive FCF, but high debt and negative net cash.",
+        "bull": "Revenue growth of 39.5% and PEG ratio below 1 suggest undervaluation.",
+        "bear": "High total debt and negative net cash indicate financial strain."
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Neutral analyst consensus, low short squeeze potential, but high insider selling.",
+        "bull": "Analyst consensus is buy with a mean score of 1.89",
+        "bear": "Insider transactions show significant net bearish sentiment"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, moderate liquidity risks.",
+        "bull": "Positive free cash flow and manageable short interest.",
+        "bear": "High debt levels and binary earnings risk."
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions; strong growth but high debt.",
+        "bull": "Revenue growth and undervaluation suggest potential upside.",
+        "bear": "High debt levels pose significant financial strain."
+      }
+    },
+    "key_stats": {
+      "market_cap": 140499288064,
+      "revenue_growth": 0.395,
+      "gross_margin": 0.20125,
+      "operating_margin": 0.09623,
+      "pe_forward": 14.662347,
+      "ps_ratio": 1.2374649,
+      "ev_revenue": 1.412,
+      "short_float": 0.083100006,
+      "beta": 0.954,
+      "analyst_target": 185.21739,
+      "recommendation": "buy",
+      "analyst_count": 23,
+      "debt_to_equity": null,
+      "current_ratio": 0.91,
+      "free_cash_flow": 6606750208
+    }
+  },
+  "ACN": {
+    "symbol": "ACN",
+    "score": 56.0,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:36:09.739553+00:00",
+    "price_at_score": 178.36000061035156,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 28,
+        "rationale": "Price below all MAs, RSI neutral, MACD bearish, low volume, high volatility.",
+        "bull": "RSI in oversold territory",
+        "bear": "Bearish crossover on MACD"
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "Strong revenue growth, healthy margins, positive FCF, but high debt and P/E ratio.",
+        "bull": "Revenue growth at 8.3%, robust free cash flow generation.",
+        "bear": "High Debt/Equity ratio of 25.47, relatively high forward P/E."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with significant upside, low short interest and squeeze potential.",
+        "bull": "Strong analyst buy recommendation with high price target upside",
+        "bear": "Insider net sentiment is bearish"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, moderate liquidity issues.",
+        "bull": "Positive free cash flow and manageable short interest.",
+        "bear": "High debt levels and binary earnings event."
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions, strong fundamentals but technicals weak.",
+        "bull": "Strong revenue growth and positive FCF suggest long-term value creation.",
+        "bear": "High debt levels and volatile stock price pose significant risks."
+      }
+    },
+    "key_stats": {
+      "market_cap": 109769015296,
+      "revenue_growth": 0.083,
+      "gross_margin": 0.32026002,
+      "operating_margin": 0.13819,
+      "pe_forward": 11.962578,
+      "ps_ratio": 1.5222372,
+      "ev_revenue": 1.526,
+      "short_float": 0.0327,
+      "beta": 1.236,
+      "analyst_target": 250.51407,
+      "recommendation": "buy",
+      "analyst_count": 27,
+      "debt_to_equity": 25.469,
+      "current_ratio": 1.336,
+      "free_cash_flow": 12164313088
+    }
+  },
+  "PANW": {
+    "symbol": "PANW",
+    "score": 66.0,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:36:27.075043+00:00",
+    "price_at_score": 178.5399932861328,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 68,
+        "rationale": "Positive trend, strong momentum, moderate volume. Underperforms SPY long-term.",
+        "bull": "Bullish MACD crossover, price above all moving averages",
+        "bear": "Price below 200-day SMA, high volatility"
+      },
+      "fundamental": {
+        "score": 78,
+        "rationale": "Strong revenue growth, high margins, robust cash position; overvalued relative to earnings.",
+        "bull": "Revenue growth and profitability are impressive.",
+        "bear": "High P/E and EV/EBITDA suggest potential overvaluation."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with upside potential, but insider net sentiment is bearish.",
+        "bull": "Strong analyst buy recommendation and price target upside",
+        "bear": "High insider selling activity"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "Moderate volatility, decent liquidity, manageable debt. High short interest and binary earnings risk.",
+        "bull": "Positive free cash flow",
+        "bear": "High short interest and significant drawdown potential"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions; strong fundamentals vs. technical and sentiment concerns.",
+        "bull": "Strong revenue growth and profitability with positive free cash flow.",
+        "bear": "High valuation multiples and significant insider selling."
+      }
+    },
+    "key_stats": {
+      "market_cap": 144795926528,
+      "revenue_growth": 0.149,
+      "gross_margin": 0.73502,
+      "operating_margin": 0.15496999,
+      "pe_forward": 44.975574,
+      "ps_ratio": 14.635461,
+      "ev_revenue": 14.314,
+      "short_float": 0.0321,
+      "beta": 0.766,
+      "analyst_target": 206.1408,
+      "recommendation": "buy",
+      "analyst_count": 50,
+      "debt_to_equity": 4.887,
+      "current_ratio": 1.045,
+      "free_cash_flow": 2859225088
+    }
+  },
+  "CRWD": {
+    "symbol": "CRWD",
+    "score": 63.5,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:36:45.528926+00:00",
+    "price_at_score": 448.1300048828125,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 72,
+        "rationale": "Above MAs, bullish MACD, strong RSI; underperforms SPY short-term.",
+        "bull": "Bullish MACD crossover, price above all moving averages",
+        "bear": "RSI overbought, below 200-day SMA"
+      },
+      "fundamental": {
+        "score": 62,
+        "rationale": "High revenue growth, strong cash position; negative margins and high PEG ratio.",
+        "bull": "Revenue growth at 23.3%, robust free cash flow of $1.6B.",
+        "bear": "Negative operating and net margins, high forward P/E and PEG ratios."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with upside potential, but insider selling and lack of institutional interest dampen sentiment.",
+        "bull": "Strong analyst buy recommendation with price target upside",
+        "bear": "Insider net selling indicates bearish sentiment"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, moderate liquidity risks.",
+        "bull": "Positive free cash flow and manageable debt levels.",
+        "bear": "Earnings binary event risk and high short interest."
+      },
+      "thesis": {
+        "score": 68,
+        "rationale": "Mixed signals across dimensions, strong growth but high valuation risks.",
+        "bull": "High revenue growth and robust free cash flow support buy recommendation.",
+        "bear": "Negative margins, overvaluation concerns, and insider selling pose significant risks."
+      }
+    },
+    "key_stats": {
+      "market_cap": 113652088832,
+      "revenue_growth": 0.233,
+      "gross_margin": 0.74808997,
+      "operating_margin": 0.0100300005,
+      "pe_forward": 72.61094,
+      "ps_ratio": 23.618448,
+      "ev_revenue": 22.711,
+      "short_float": 0.026199998,
+      "beta": 1.072,
+      "analyst_target": 491.13568,
+      "recommendation": "buy",
+      "analyst_count": 51,
+      "debt_to_equity": 18.336,
+      "current_ratio": 1.773,
+      "free_cash_flow": 1604615040
+    }
+  },
+  "FTNT": {
+    "symbol": "FTNT",
+    "score": 61.5,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T11:37:03.013288+00:00",
+    "price_at_score": 84.33999633789062,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 72,
+        "rationale": "Above MAs, bullish MACD, neutral RSI, outperforming SPY short-term.",
+        "bull": "Bullish MACD crossover, price above all moving averages",
+        "bear": "RSI near overbought territory, high historical volatility"
+      },
+      "fundamental": {
+        "score": 72,
+        "rationale": "Strong revenue growth, high margins, robust cash position; overvalued relative to earnings growth.",
+        "bull": "Revenue growth and profitability are impressive.",
+        "bear": "High P/E ratio and negative YoY earnings growth."
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Neutral analyst consensus, low short squeeze potential, but bearish insider transactions.",
+        "bull": "Analyst price target upside",
+        "bear": "Bearish insider behavior"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "Moderate volatility, decent liquidity, manageable debt. High short interest and binary earnings risk.",
+        "bull": "Positive free cash flow",
+        "bear": "High beta and significant drawdown potential"
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals across dimensions; strong fundamentals vs. technical overbought and sentiment concerns.",
+        "bull": "Strong revenue growth and profitability, positive free cash flow.",
+        "bear": "High P/E ratio, negative YoY earnings growth, bearish insider behavior."
+      }
+    },
+    "key_stats": {
+      "market_cap": 62412554240,
+      "revenue_growth": 0.148,
+      "gross_margin": 0.80456,
+      "operating_margin": 0.32766,
+      "pe_forward": 25.486002,
+      "ps_ratio": 9.178857,
+      "ev_revenue": 8.807,
+      "short_float": 0.0317,
+      "beta": 0.998,
+      "analyst_target": 89.0,
+      "recommendation": "hold",
+      "analyst_count": 34,
+      "debt_to_equity": 85.802,
+      "current_ratio": 1.172,
+      "free_cash_flow": 1746974976
+    }
+  },
+  "ORC": {
+    "symbol": "ORC",
+    "score": 40.5,
+    "grade": "C",
+    "signal": "neutral",
+    "updated": "2026-04-27T12:31:31.540978+00:00",
+    "price_at_score": 7.050000190734863,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 42,
+        "rationale": "Price above short-term MA, below long-term MA; neutral RSI; bearish MACD crossover; volume slightly elevated.",
+        "bull": "Price above 20-day SMA",
+        "bear": "Bearish MACD histogram"
+      },
+      "fundamental": {
+        "score": 42,
+        "rationale": "High margins but negative cash flow, high debt, poor liquidity ratios.",
+        "bull": "Strong net margin and gross margin.",
+        "bear": "Severe debt issues with Debt/Equity ratio of 780.66."
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Neutral analyst consensus, no recent news, low short squeeze potential.",
+        "bull": "Price target upside of 6.4%",
+        "bear": "High short interest ratio"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant debt, low liquidity, and binary earnings risk.",
+        "bull": "Potential for positive earnings event could boost stock price.",
+        "bear": "Severe leverage and cash flow concerns pose immediate financial risks."
+      },
+      "thesis": {
+        "score": 45,
+        "rationale": "Mixed signals across dimensions; limited catalyst clarity and asymmetric risks.",
+        "bull": "Strong margins could drive earnings growth if debt is managed.",
+        "bear": "Severe leverage and negative cash flow pose immediate financial distress risk."
+      }
+    },
+    "key_stats": {
+      "market_cap": 1414936576,
+      "revenue_growth": null,
+      "gross_margin": 0.96969,
+      "operating_margin": 1.58903,
+      "pe_forward": 5.127273,
+      "ps_ratio": 9.717704,
+      "ev_revenue": 77.227,
+      "short_float": 0.068,
+      "beta": 1.633,
+      "analyst_target": 7.5,
+      "recommendation": "hold",
+      "analyst_count": 1,
+      "debt_to_equity": 780.665,
+      "current_ratio": 0.108,
+      "free_cash_flow": null
+    }
+  },
+  "PSEC": {
+    "symbol": "PSEC",
+    "score": 52.0,
+    "grade": "C",
+    "signal": "neutral",
+    "updated": "2026-04-27T12:31:47.460335+00:00",
+    "price_at_score": 2.7300000190734863,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 68,
+        "rationale": "Above MAs, bullish MACD crossover, neutral RSI. Strong relative performance vs SPY.",
+        "bull": "Bullish MACD crossover, price above all moving averages",
+        "bear": "RSI in overbought territory, recent weekly decline"
+      },
+      "fundamental": {
+        "score": 42,
+        "rationale": "Negative revenue growth, poor margins, high debt, and negative cash flow.",
+        "bull": "Positive forward P/E ratio suggests potential future earnings improvement.",
+        "bear": "High debt levels and negative net margin indicate financial strain."
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Lack of recent news and analyst ratings, low short interest but significant insider buying.",
+        "bull": "Insider transactions show strong net buying (61 buys).",
+        "bear": "No positive analyst ratings or price targets."
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "Moderate volatility, high debt, low liquidity, significant short interest.",
+        "bull": "Positive free cash flow",
+        "bear": "High debt/equity ratio and limited market cap"
+      },
+      "thesis": {
+        "score": 58,
+        "rationale": "Mixed signals; technicals bullish, fundamentals weak.",
+        "bull": "Positive forward P/E and insider buying suggest potential recovery.",
+        "bear": "High debt levels and negative analyst ratings pose significant risks."
+      }
+    },
+    "key_stats": {
+      "market_cap": 1328103936,
+      "revenue_growth": -0.051,
+      "gross_margin": 1.0,
+      "operating_margin": 0.70271003,
+      "pe_forward": 6.5000005,
+      "ps_ratio": 1.9784414,
+      "ev_revenue": 7.082,
+      "short_float": 0.09689999,
+      "beta": 0.835,
+      "analyst_target": 2.5,
+      "recommendation": "none",
+      "analyst_count": 1,
+      "debt_to_equity": 40.344,
+      "current_ratio": 0.74,
+      "free_cash_flow": 203074256
+    }
+  },
+  "IVR": {
+    "symbol": "IVR",
+    "score": 59.4,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T12:32:03.770613+00:00",
+    "price_at_score": 8.359999656677246,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 72,
+        "rationale": "Above MAs, bullish MACD, high volume, outperforming SPY short term.",
+        "bull": "Bullish MACD crossover, price above all moving averages",
+        "bear": "RSI in overbought territory, recent underperformance vs SPY"
+      },
+      "fundamental": {
+        "score": 62,
+        "rationale": "High revenue growth, strong margins; high debt and poor liquidity are concerns.",
+        "bull": "Revenue grew by over 500% YoY with robust net margin.",
+        "bear": "Severe negative cash position and very low current ratio."
+      },
+      "sentiment": {
+        "score": 62,
+        "rationale": "Analyst consensus is hold with slight upside, low short interest, and positive insider transactions.",
+        "bull": "Positive insider transaction indicating confidence among insiders.",
+        "bear": "Moderate analyst consensus leaning towards hold."
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant drawdowns, low liquidity, high debt.",
+        "bull": "Potential earnings beat could boost stock.",
+        "bear": "Severe debt burden and negative cash flow."
+      },
+      "thesis": {
+        "score": 65,
+        "rationale": "Mixed signals; strong growth but high risks.",
+        "bull": "Revenue surge and positive insider activity suggest potential upside.",
+        "bear": "Severe debt and negative cash flow pose significant financial risk."
+      }
+    },
+    "key_stats": {
+      "market_cap": 744040000,
+      "revenue_growth": 5.577,
+      "gross_margin": 1.0,
+      "operating_margin": 0.91857004,
+      "pe_forward": 3.6911612,
+      "ps_ratio": 6.2086115,
+      "ev_revenue": 53.577,
+      "short_float": 0.08,
+      "beta": 1.671,
+      "analyst_target": 8.5,
+      "recommendation": "hold",
+      "analyst_count": 3,
+      "debt_to_equity": 704.57,
+      "current_ratio": 0.035,
+      "free_cash_flow": null
+    }
+  },
+  "PEB": {
+    "symbol": "PEB",
+    "score": 51.5,
+    "grade": "C",
+    "signal": "neutral",
+    "updated": "2026-04-27T12:32:20.386887+00:00",
+    "price_at_score": 13.960000038146973,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 78,
+        "rationale": "Strong trend, overbought RSI, bullish MACD, high relative strength vs SPY, but near 52W high.",
+        "bull": "Price above all moving averages, strong momentum (MACD bullish crossover).",
+        "bear": "Overbought condition (RSI >70), nearing 52-week high."
+      },
+      "fundamental": {
+        "score": 42,
+        "rationale": "Negative margins, high debt, and poor ROE offset by positive FCF and reasonable P/S ratio.",
+        "bull": "Positive free cash flow indicates operational efficiency despite losses.",
+        "bear": "High debt levels and negative net income suggest financial instability."
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Neutral analyst consensus, high short interest, but positive insider transactions.",
+        "bull": "Positive insider transactions",
+        "bear": "High short interest and low price target upside"
+      },
+      "risk": {
+        "score": 25,
+        "rationale": "High volatility, significant short interest, and high debt burden.",
+        "bull": "Positive free cash flow",
+        "bear": "Earnings binary event risk"
+      },
+      "thesis": {
+        "score": 58,
+        "rationale": "Mixed signals across dimensions; positive FCF and insider buys vs high debt and overbought tech.",
+        "bull": "Positive free cash flow indicates operational efficiency despite losses.",
+        "bear": "High short interest and nearing 52-week high suggest potential price correction."
+      }
+    },
+    "key_stats": {
+      "market_cap": 1582634496,
+      "revenue_growth": 0.034,
+      "gross_margin": 0.24167,
+      "operating_margin": 0.01497,
+      "pe_forward": -26.175163,
+      "ps_ratio": 1.0725769,
+      "ev_revenue": 2.711,
+      "short_float": 0.2193,
+      "beta": 1.432,
+      "analyst_target": 13.4,
+      "recommendation": "hold",
+      "analyst_count": 15,
+      "debt_to_equity": 97.655,
+      "current_ratio": 0.545,
+      "free_cash_flow": 223795248
+    }
+  },
+  "LSPD": {
+    "symbol": "LSPD",
+    "score": 61.0,
+    "grade": "B",
+    "signal": "accumulate",
+    "updated": "2026-04-27T12:32:37.182787+00:00",
+    "price_at_score": 9.399999618530273,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 62,
+        "rationale": "Above MAs, bullish MACD crossover, high relative volume; RSI neutral, price below 200-day SMA.",
+        "bull": "Price above short-term SMAs, bullish MACD crossover",
+        "bear": "RSI in overbought territory, price below long-term SMA"
+      },
+      "fundamental": {
+        "score": 62,
+        "rationale": "Revenue growth positive, strong cash position, but negative margins and high P/E forward.",
+        "bull": "Positive revenue growth and robust free cash flow generation.",
+        "bear": "Negative operating and net margins indicate ongoing losses."
+      },
+      "sentiment": {
+        "score": 65,
+        "rationale": "Analyst consensus is buy with significant upside, positive insider transactions. Low short interest and no recent news.",
+        "bull": "Strong analyst buy recommendation with high price target upside",
+        "bear": "Low institutional ownership data available"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "High volatility, significant drawdowns, moderate liquidity risks.",
+        "bull": "Positive free cash flow and strong current ratio.",
+        "bear": "Earnings binary event risk and high short interest."
+      },
+      "thesis": {
+        "score": 68,
+        "rationale": "Mixed signals across dimensions, strong fundamentals but technicals and margins weak.",
+        "bull": "Positive revenue growth and robust cash flow support buy recommendation.",
+        "bear": "Negative margins and high volatility pose significant risks."
+      }
+    },
+    "key_stats": {
+      "market_cap": 1290628864,
+      "revenue_growth": 0.115,
+      "gross_margin": 0.4284,
+      "operating_margin": -0.109510005,
+      "pe_forward": 13.936662,
+      "ps_ratio": 1.084863,
+      "ev_revenue": 0.699,
+      "short_float": 0.039,
+      "beta": 1.866,
+      "analyst_target": 12.88462,
+      "recommendation": "buy",
+      "analyst_count": 13,
+      "debt_to_equity": 1.345,
+      "current_ratio": 4.52,
+      "free_cash_flow": 61319124
+    }
+  },
+  "WU": {
+    "symbol": "WU",
+    "score": 50.5,
+    "grade": "C",
+    "signal": "neutral",
+    "updated": "2026-04-27T12:32:52.214182+00:00",
+    "price_at_score": 8.899999618530273,
+    "next_earnings": null,
+    "breakdown": {
+      "technical": {
+        "score": 62,
+        "rationale": "Positive MACD crossover, price above long-term MA; weak relative strength vs SPY.",
+        "bull": "Bullish MACD histogram crossover",
+        "bear": "Price below short-term moving averages"
+      },
+      "fundamental": {
+        "score": 42,
+        "rationale": "Revenue decline, weak margins, high debt, but low P/E and P/S ratios.",
+        "bull": "Low valuation multiples offer potential upside if performance improves.",
+        "bear": "High debt levels and negative revenue growth indicate financial strain."
+      },
+      "sentiment": {
+        "score": 45,
+        "rationale": "Moderate analyst underperform consensus, low price target upside, moderate short squeeze potential.",
+        "bull": "Insider net bullish transactions",
+        "bear": "High short interest ratio"
+      },
+      "risk": {
+        "score": 45,
+        "rationale": "Moderate volatility, high short interest, low liquidity, significant debt.",
+        "bull": "Positive free cash flow",
+        "bear": "High debt/equity ratio"
+      },
+      "thesis": {
+        "score": 58,
+        "rationale": "Mixed signals; valuation low but fundamentals weak.",
+        "bull": "Low P/E and P/S ratios offer upside if performance improves.",
+        "bear": "High debt levels and negative revenue growth indicate financial strain."
+      }
+    },
+    "key_stats": {
+      "market_cap": 2789413632,
+      "revenue_growth": -0.001,
+      "gross_margin": 0.36138,
+      "operating_margin": 0.12517,
+      "pe_forward": 4.623064,
+      "ps_ratio": 0.6887781,
+      "ev_revenue": 1.11,
+      "short_float": 0.1692,
+      "beta": 0.536,
+      "analyst_target": 9.46154,
+      "recommendation": "underperform",
+      "analyst_count": 13,
+      "debt_to_equity": 288.116,
+      "current_ratio": 0.256,
+      "free_cash_flow": 290700000
+    }
+  }
+}
