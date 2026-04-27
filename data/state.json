@@ -1,5 +1,5 @@
 {
-  "cash": 39545.05,
+  "cash": 29387.02,
   "positions": {
     "AVGO": {
       "qty": 11.0,
@@ -124,6 +124,50 @@
       },
       "stop_order_id": "95f519b3-2861-42e1-bd5b-adb511185d39",
       "stop_order_type": "trailing_stop"
+    },
+    "PANW": {
+      "qty": 28.0,
+      "avg_entry": 182.337143,
+      "stop_loss": 171.91475,
+      "take_profit": 187.0575,
+      "tags": {
+        "quality": "strong",
+        "trend": "uptrend",
+        "regime": "bullish",
+        "sizing_mode": "normal",
+        "entry_price": 182.336667,
+        "entry_datetime": "2026-04-27T16:35:33.145990",
+        "stop_reason": "prior-candle low 182.36 >= entry 178.15",
+        "small_cap": false,
+        "gap_up": false,
+        "trailing": true,
+        "trail_pct": 0.1,
+        "stop_order_status": "placed"
+      },
+      "stop_order_id": "f4d32089-8676-47e6-ac20-b9cb2246dad0",
+      "stop_order_type": "trailing_stop"
+    },
+    "NVDA": {
+      "qty": 23.0,
+      "avg_entry": 212.936087,
+      "stop_loss": 209.265,
+      "take_profit": 223.5975,
+      "tags": {
+        "quality": "weak",
+        "trend": "uptrend",
+        "regime": "bullish",
+        "sizing_mode": "normal",
+        "entry_price": 212.936087,
+        "entry_datetime": "2026-04-27T16:35:38.242453",
+        "stop_reason": "dynamic stop = min(low) of last 5 15m candles = 209.26 (1.73% below entry)",
+        "small_cap": false,
+        "gap_up": false,
+        "trailing": true,
+        "trail_pct": 0.1,
+        "stop_order_status": "placed"
+      },
+      "stop_order_id": "c3b08951-400e-403d-819e-675f343ac0df",
+      "stop_order_type": "trailing_stop"
     }
   },
   "orders": [
@@ -162,6 +206,24 @@
       "price": 155.06,
       "at": "2026-04-27 15:35:54.627740+00:00",
       "notes": "Strong news sentiment, bullish technicals, and market breadth; no position yet. | trend=uptrend | regime=bullish | quality=strong | deep_score=66 (B/accumulate) \u2014 full size allowed"
+    },
+    {
+      "id": "cbde4037-b6ec-494d-88f5-9fe9e3a1918f",
+      "symbol": "PANW",
+      "side": "BUY",
+      "qty": 24.0,
+      "price": 182.3367,
+      "at": "2026-04-27 16:35:33.139985+00:00",
+      "notes": "Strong news, bullish regime, positive technicals; no position history to contradict. | trend=uptrend | regime=bullish | quality=strong | deep_score=66 (B/accumulate) \u2014 full size allowed"
+    },
+    {
+      "id": "6d18ab39-472b-4d66-9d60-c180cd4c0384",
+      "symbol": "NVDA",
+      "side": "BUY",
+      "qty": 23.0,
+      "price": 212.9361,
+      "at": "2026-04-27 16:35:38.225559+00:00",
+      "notes": "Bullish regime, strong technicals, mixed news; no position. | trend=uptrend | regime=bullish | quality=weak | deep_score=76 (A/buy) \u2014 full size allowed"
     }
   ]
 }

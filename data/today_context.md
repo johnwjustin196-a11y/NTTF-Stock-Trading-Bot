@@ -1,4 +1,4 @@
-[Session as of pre-11:30 - 2026-04-27]
-Open positions: 9 | Avg unrealized P&L: +0.19% | 4 up / 5 down
-Best open: PENN +4.69% | Worst: MCHP -3.54%
-No new entries made today yet.
+[Session as of pre-12:30 - 2026-04-27]
+Open positions: 13 | Avg unrealized P&L: +0.25% | 5 up / 8 down
+Best open: PENN +5.45% | Worst: MCHP -3.56%
+Today's new entries: 4 | Avg P&L since entry: -0.17%
