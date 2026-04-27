@@ -6,8 +6,9 @@ or double-click dashboard.bat.
 from __future__ import annotations
 
 import json
+import math
 import statistics as _stats
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -152,6 +153,7 @@ BT_DECISIONS_FILE = DATA / "backtest_decisions.jsonl"
 # Other
 TRADE_SCORES_FILE = DATA / "trade_scores.json"
 INDICATOR_STATS   = DATA / "indicator_stats.json"
+QUEUE_HISTORY_FILE = DATA / "queue_cache" / "queue_history.jsonl"
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -180,6 +182,54 @@ def action_html(a: str) -> str:
 
 def fmt_pnl(v: float) -> str:
     return f"+${v:,.2f}" if v >= 0 else f"-${abs(v):,.2f}"
+
+def _safe_float(value, default=None):
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return default
+    return out if math.isfinite(out) else default
+
+def _normalized_ratio(value, default: float = 0.0) -> float:
+    out = _safe_float(value, default)
+    if out is None:
+        return default
+    return out / 100.0 if abs(out) > 1.0 else out
+
+def _decision_timestamp(row: dict) -> float:
+    for key in ("timestamp", "at", "created_at"):
+        raw = row.get(key)
+        if not raw:
+            continue
+        text = str(raw).strip()
+        try:
+            dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.timestamp()
+        except ValueError:
+            pass
+    date_s = str(row.get("date") or "")[:10]
+    time_s = str(row.get("cycle") or row.get("time") or "00:00")[:5]
+    try:
+        return datetime.fromisoformat(f"{date_s}T{time_s}:00").replace(tzinfo=timezone.utc).timestamp()
+    except ValueError:
+        return 0.0
+
+def _queue_event_timestamp(row: dict) -> float:
+    for key in ("logged_at", "checked_at", "fired_at", "expired_at", "queued_at", "date"):
+        raw = row.get(key)
+        if not raw:
+            continue
+        text = str(raw).strip()
+        try:
+            dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.timestamp()
+        except ValueError:
+            pass
+    return 0.0
 
 def _gate_pill(status: str) -> str:
     if status == "pass":  return '<span class="gate-pass">PASS</span>'
@@ -281,7 +331,7 @@ def load_decisions_master(source: str = "live") -> list:
         return []
     rows = []
     try:
-        with open(path, encoding="utf-8") as f:
+        with open(path, encoding="utf-8-sig") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -292,8 +342,107 @@ def load_decisions_master(source: str = "live") -> list:
                     continue
     except Exception:
         return []
-    rows.sort(key=lambda r: r.get("date", "") + r.get("timestamp", ""), reverse=True)
+    rows.sort(key=_decision_timestamp, reverse=True)
     return rows
+
+@st.cache_data(ttl=60)
+def load_queue_history() -> list:
+    if not QUEUE_HISTORY_FILE.exists():
+        return []
+    rows = []
+    try:
+        with open(QUEUE_HISTORY_FILE, encoding="utf-8-sig") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rows.append(json.loads(line))
+                except Exception:
+                    continue
+    except Exception:
+        return []
+    rows.sort(key=_queue_event_timestamp, reverse=True)
+    return rows
+
+def _queue_history_frame(rows: list[dict]) -> pd.DataFrame:
+    out = []
+    for row in rows:
+        queue_score = row.get("combined_score_at_queue")
+        if queue_score is None:
+            queue_score = row.get("queue_score")
+        rescore = row.get("rescore")
+        if rescore is None:
+            rescore = row.get("score")
+        out.append({
+            "Time": (
+                row.get("logged_at") or row.get("checked_at") or row.get("fired_at")
+                or row.get("expired_at") or row.get("queued_at") or row.get("date")
+            ),
+            "Event": row.get("event") or row.get("outcome"),
+            "Symbol": row.get("symbol"),
+            "Type": row.get("entry_type"),
+            "Queued Px": row.get("price_at_queue"),
+            "Trigger": row.get("trigger_price"),
+            "Queue Score": queue_score,
+            "Rescore": rescore,
+            "Threshold": row.get("buy_threshold"),
+            "Passed": row.get("passed_threshold"),
+            "Order Status": row.get("order_status") or row.get("placed_status"),
+            "Qty": row.get("qty"),
+            "Fill": row.get("filled_price") if row.get("filled_price") is not None else row.get("price"),
+            "Close": row.get("close_price"),
+            "Queue->Close %": row.get("pct_queue_to_close"),
+            "Trigger->Close %": row.get("pct_trigger_to_close"),
+            "Outcome": row.get("outcome") or row.get("event"),
+            "Error": row.get("error"),
+        })
+    return pd.DataFrame(out)
+
+def _render_queue_history_table(rows: list[dict], empty_caption: str, limit: int | None = None) -> None:
+    if not rows:
+        st.caption(empty_caption)
+        return
+    events = [str(r.get("event") or r.get("outcome") or "").lower() for r in rows]
+    triggered = sum(
+        1 for r, ev in zip(rows, events)
+        if ev in ("triggered", "trigger_below_threshold")
+        or r.get("passed_threshold") is not None
+    )
+    skipped = sum(
+        1 for r, ev in zip(rows, events)
+        if ev in ("fire_skipped", "trigger_below_threshold")
+        or r.get("passed_threshold") is False
+    )
+    expired_keys = {
+        (r.get("symbol"), r.get("queued_at") or r.get("date"))
+        for r, ev in zip(rows, events)
+        if ev in ("expired", "never_triggered")
+    }
+    _qc1, _qc2, _qc3, _qc4, _qc5 = st.columns(5)
+    _qc1.metric("Queued", events.count("queued"))
+    _qc2.metric("Trigger Touches", triggered)
+    _qc3.metric("Orders Placed", events.count("fired"))
+    _qc4.metric("Skipped", skipped)
+    _qc5.metric("Expired / Missed", len(expired_keys))
+    shown = rows[:limit] if limit else rows
+    _df_q = _queue_history_frame(shown)
+    st.dataframe(
+        _df_q,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Queued Px": st.column_config.NumberColumn(format="$%.2f"),
+            "Trigger": st.column_config.NumberColumn(format="$%.2f"),
+            "Queue Score": st.column_config.NumberColumn(format="%+.3f"),
+            "Rescore": st.column_config.NumberColumn(format="%+.3f"),
+            "Threshold": st.column_config.NumberColumn(format="%+.3f"),
+            "Fill": st.column_config.NumberColumn(format="$%.2f"),
+            "Close": st.column_config.NumberColumn(format="$%.2f"),
+            "Queue->Close %": st.column_config.NumberColumn(format="%+.2f%%"),
+            "Trigger->Close %": st.column_config.NumberColumn(format="%+.2f%%"),
+        },
+    )
 
 @st.cache_data(ttl=300)
 def load_backtest_history() -> list:
@@ -311,7 +460,7 @@ def load_backtest_history() -> list:
 def load_backtest_results(results_file: str) -> dict:
     if not results_file:
         return {}
-    p = Path(results_file)
+    p = Path(str(results_file).replace("\\", "/"))
     if not p.exists():
         p = DATA / results_file
     if not p.exists():
@@ -345,7 +494,7 @@ def load_backtest_postmortems() -> list:
         return []
     rows = []
     try:
-        with open(BT_POSTMORTEMS, encoding="utf-8") as f:
+        with open(BT_POSTMORTEMS, encoding="utf-8-sig") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -364,7 +513,7 @@ def load_ind_stats_history() -> list:
         return []
     rows = []
     try:
-        with open(IND_STATS_HISTORY, encoding="utf-8") as f:
+        with open(IND_STATS_HISTORY, encoding="utf-8-sig") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -619,7 +768,13 @@ def _live_positions_panel(mini: bool = False) -> None:
         })
 
     equity    = cash + total_mv
-    starting  = 100_000.0 if MODE == "sim" else equity
+    starting  = _safe_float(
+        _state.get("starting_equity")
+        or _state.get("starting_cash")
+        or cfg.get("dashboard", {}).get("starting_equity")
+        or cfg.get("broker", {}).get("starting_equity"),
+        100_000.0,
+    )
     total_ret = equity - starting
     total_ret_pct = (equity / starting - 1) if starting else 0
 
@@ -634,7 +789,7 @@ def _live_positions_panel(mini: bool = False) -> None:
     st.markdown('<div class="section-label">Account</div>', unsafe_allow_html=True)
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Equity",         f"${equity:,.2f}",
-              f"{total_ret_pct:+.2%}  (${total_ret:+,.0f})" if MODE == "sim" else None)
+              f"{total_ret_pct:+.2%}  (${total_ret:+,.0f})")
     m2.metric("Cash",           f"${cash:,.2f}")
     m3.metric("Open Positions", len(pos_rows),
               f"${total_mv:,.0f} market value" if pos_rows else "none")
@@ -675,9 +830,10 @@ def _bt_stats(bt: dict) -> dict:
     pnl    = final - start
     ret    = pnl / start if start else 0
 
-    wins   = [t for t in trades if t.get("pnl", 0) > 0]
-    losses = [t for t in trades if t.get("pnl", 0) <= 0]
-    wr     = len(wins) / len(trades) if trades else 0
+    scored_trades = [t for t in trades if _safe_float(t.get("pnl")) is not None]
+    wins   = [t for t in scored_trades if (_safe_float(t.get("pnl"), 0.0) or 0.0) > 0]
+    losses = [t for t in scored_trades if (_safe_float(t.get("pnl"), 0.0) or 0.0) <= 0]
+    wr     = len(wins) / len(scored_trades) if scored_trades else 0
 
     # Sharpe
     rets, prev = [], start
@@ -688,7 +844,13 @@ def _bt_stats(bt: dict) -> dict:
     sharpe = 0.0
     if len(rets) > 1:
         sd = _stats.stdev(rets)
-        sharpe = (_stats.mean(rets) / sd * 252 ** 0.5) if sd > 0 else 0.0
+        rf_annual = _safe_float(
+            cfg.get("dashboard", {}).get("risk_free_rate")
+            or cfg.get("backtest", {}).get("risk_free_rate"),
+            0.04,
+        )
+        excess = [r - (rf_annual / 252.0) for r in rets]
+        sharpe = (_stats.mean(excess) / sd * (len(excess) ** 0.5)) if sd > 0 else 0.0
 
     # Max drawdown
     peak, mdd = start, 0.0
@@ -698,8 +860,8 @@ def _bt_stats(bt: dict) -> dict:
         dd = (e - peak) / peak if peak > 0 else 0
         if dd < mdd: mdd = dd
 
-    gw = sum(t["pnl"] for t in wins)
-    gl = abs(sum(t["pnl"] for t in losses))
+    gw = sum(_safe_float(t.get("pnl"), 0.0) or 0.0 for t in wins)
+    gl = abs(sum(_safe_float(t.get("pnl"), 0.0) or 0.0 for t in losses))
     pf = gw / gl if gl > 0 else float("inf")
 
     period = ""
@@ -830,10 +992,15 @@ def page_positions_orders():
         _df_o = pd.DataFrame(orders)
         _df_o["at"]       = pd.to_datetime(_df_o.get("at", pd.Series(dtype=str)), errors="coerce")
         _df_o["notional"] = _df_o["qty"] * _df_o["price"]
-        _df_o["cash_chg"] = _df_o.apply(
-            lambda r: -r["notional"] if str(r.get("side", "")).upper() == "BUY" else r["notional"],
-            axis=1,
-        )
+        def _cash_change(row) -> float:
+            side = str(row.get("side", "")).upper()
+            notional = _safe_float(row.get("notional"), 0.0) or 0.0
+            if side == "BUY":
+                return -notional
+            if side == "SELL":
+                return notional
+            return 0.0
+        _df_o["cash_chg"] = _df_o.apply(_cash_change, axis=1)
         _df_o = _df_o.sort_values("at")
         _df_o["cum_cash"] = 100_000.0 + _df_o["cash_chg"].cumsum()
 
@@ -858,7 +1025,9 @@ def page_positions_orders():
             for _, row in _df_o.iterrows():
                 sym = row.get("symbol", "")
                 side = str(row.get("side", "")).upper()
-                notional = float(row.get("notional", 0))
+                if not sym or side not in ("BUY", "SELL"):
+                    continue
+                notional = _safe_float(row.get("notional"), 0.0) or 0.0
                 if sym not in _sym_pnl:
                     _sym_pnl[sym] = 0.0
                 if side == "SELL":
@@ -874,6 +1043,11 @@ def page_positions_orders():
                 st.plotly_chart(_fig_pnl, use_container_width=True)
     else:
         st.caption("No orders yet.")
+
+    st.write("")
+    st.markdown('<div class="section-label">Entry Queue History</div>', unsafe_allow_html=True)
+    _queue_rows = load_queue_history()
+    _render_queue_history_table(_queue_rows, "No entry queue history yet.", limit=200)
 
 
 def _parse_gate_notes(gate_notes_str: str) -> dict:
@@ -1312,10 +1486,10 @@ def page_deep_scores(note: str = "") -> None:
 def _render_indicator_tab(ind_name: str, iv: dict) -> None:
     """Render a single indicator tab for both live and backtest modes."""
     n       = iv.get("n") or iv.get("samples", 0)
-    wr      = iv.get("win_rate") or iv.get("hit_rate")
+    wr      = _normalized_ratio(iv.get("win_rate") if iv.get("win_rate") is not None else iv.get("hit_rate"), None)
     avg_ret = iv.get("avg_ret") or iv.get("avg_edge")
     corr    = iv.get("corr") or iv.get("correlation")
-    wins_n  = iv.get("wins") or (int((wr or 0) * n) if wr is not None else 0)
+    wins_n  = iv.get("wins") if iv.get("wins") is not None else (int((wr or 0) * n) if wr is not None else 0)
     losses_n = n - wins_n
 
     # Top metrics row
@@ -1804,9 +1978,9 @@ def page_bt_run_history() -> None:
                 "Date":         run.get("date", ""),
                 "Days":         len(_rs["curve"]),
                 "Return %":     _rs["ret"] * 100,
-                "Win Rate":     _rs["wr"],
+                "Win Rate":     _rs["wr"] * 100,
                 "Sharpe":       _rs["sharpe"],
-                "Max DD":       _rs["mdd"],
+                "Max DD":       _rs["mdd"] * 100,
                 "Trades":       len(_rs["trades"]),
                 "Profit Factor":pf_str,
                 "Flags":        run.get("flags", ""),
@@ -1960,9 +2134,21 @@ def page_bt_trade_journal() -> None:
     _s = _bt_stats(_bt_data)
     trades = _s["trades"]
     _ds = load_deep_scores()
+    _qlog = sorted(
+        _bt_data.get("entry_queue_log", []),
+        key=_queue_event_timestamp,
+        reverse=True,
+    )
 
     if not trades:
         st.caption("No completed trades in this run.")
+        if _qlog:
+            st.write("")
+            _queue_tab = st.tabs(["Queue"])[0]
+            with _queue_tab:
+                _render_queue_history_table(_qlog, "No queue history in this run.")
+        else:
+            st.caption("No queue history in this run.")
         return
 
     # Summary
@@ -1978,9 +2164,9 @@ def page_bt_trade_journal() -> None:
 
     st.write("")
 
-    _j1, _j2, _j3, _j4, _j5, _j6 = st.tabs([
+    _j1, _j2, _j3, _j4, _j5, _j6, _j7 = st.tabs([
         "Trade Table", "P&L Distribution", "By Symbol",
-        "Best / Worst", "Signal Analysis", "Cycle Log",
+        "Best / Worst", "Signal Analysis", "Cycle Log", "Queue",
     ])
 
     with _j1:
@@ -2036,18 +2222,21 @@ def page_bt_trade_journal() -> None:
     with _j3:
         _by_s: dict = {}
         for t in trades:
+            pnl = _safe_float(t.get("pnl"))
+            if pnl is None:
+                continue
             s = t["symbol"]
             if s not in _by_s:
                 _by_s[s] = {"n": 0, "pnl": 0.0, "wins": 0}
             _by_s[s]["n"]   += 1
-            _by_s[s]["pnl"] += t.get("pnl", 0.0)
-            if t.get("pnl", 0.0) > 0:
+            _by_s[s]["pnl"] += pnl
+            if pnl > 0:
                 _by_s[s]["wins"] += 1
         _sym_rows = sorted([
             {"Symbol":    s,
              "Grade":     _ds.get(s, {}).get("grade", "--"),
              "Trades":    v["n"],
-             "Win Rate":  v["wins"] / v["n"] if v["n"] else 0,
+             "Win Rate":  (v["wins"] / v["n"] * 100) if v["n"] else 0,
              "Total P&L": v["pnl"]}
             for s, v in _by_s.items()
         ], key=lambda r: -r["Total P&L"])
@@ -2126,11 +2315,12 @@ def page_bt_trade_journal() -> None:
         _entry_trades = [t for t in trades if "entry_tech" in t]
         if _entry_trades:
             def _sp(subset: list) -> dict:
+                subset = [t for t in subset if _safe_float(t.get("pnl")) is not None]
                 if not subset:
                     return {"n": 0, "win_rate": 0.0, "avg_pnl": 0.0}
-                wins = sum(1 for t in subset if t.get("pnl", 0) > 0)
+                wins = sum(1 for t in subset if (_safe_float(t.get("pnl"), 0.0) or 0.0) > 0)
                 return {"n": len(subset), "win_rate": wins/len(subset),
-                        "avg_pnl": sum(t.get("pnl",0) for t in subset)/len(subset)}
+                        "avg_pnl": sum(_safe_float(t.get("pnl"), 0.0) or 0.0 for t in subset)/len(subset)}
 
             _perf_rows = []
             for _sk, _sl in [("entry_tech","Tech"),("entry_news","News"),("entry_llm","LLM")]:
@@ -2176,7 +2366,7 @@ def page_bt_trade_journal() -> None:
                         if _sub:
                             _p = _sp(_sub)
                             _gr_rows.append({_lbl_grp: _v.capitalize(),
-                                             "Trades": _p["n"], "Win Rate": _p["win_rate"],
+                                             "Trades": _p["n"], "Win Rate": _p["win_rate"] * 100,
                                              "Avg P&L": _p["avg_pnl"]})
                     if _gr_rows:
                         st.dataframe(pd.DataFrame(_gr_rows), use_container_width=True, hide_index=True,
@@ -2260,6 +2450,12 @@ def page_bt_trade_journal() -> None:
                 st.markdown(_jl_table, unsafe_allow_html=True)
             else:
                 st.caption("No events for the selected date.")
+
+    with _j7:
+        _render_queue_history_table(
+            _qlog,
+            "No queue history in this run. Re-run with the backtest queue enabled to generate it.",
+        )
 
 
 def page_bt_lessons() -> None:

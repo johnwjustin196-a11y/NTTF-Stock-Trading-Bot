@@ -23,7 +23,8 @@ trading:
   max_trade_usd: 5000
   risk_per_trade_pct: 0.01
   stop_loss_mode: dynamic
-  stop_loss_pct: 0.035
+  stop_loss_pct: 0.04
+  stop_loss_min_pct: 0.04
   stop_loss_lookback_candles: 5
   stop_loss_timeframe: "15m"
   stop_loss_max_pct: 0.05

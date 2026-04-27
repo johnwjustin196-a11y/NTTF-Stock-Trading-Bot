@@ -12,7 +12,7 @@ after that date.
 """
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from typing import Any
 
 from .data_cache import DataCache
@@ -536,7 +536,7 @@ def backtest_news_signal(
     if isinstance(as_of_date, datetime):
         end_dt = as_of_date
     else:
-        end_dt = datetime.combine(as_of_date, datetime.max.time())
+        end_dt = datetime.combine(as_of_date, time(hour=9, minute=30))
     start_dt = end_dt - timedelta(days=lookback_days)
 
     headlines: list[str] = []

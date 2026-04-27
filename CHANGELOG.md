@@ -5,6 +5,105 @@ backtest or live-run results. To undo a block, reverse the listed changes.
 
 ---
 
+## [2026-04-27 | Session P] Minimum 4% Stop Floor
+
+**Purpose:** Give new positions more room before stops trigger by preventing default stop-loss placement tighter than 4%.
+
+**Modified files:**
+- `config/settings.yaml` - changed `trading.stop_loss_pct` to `0.04` and added `trading.stop_loss_min_pct: 0.04`.
+- `src/trading/position_manager.py` - applies the minimum stop floor to fixed stops, dynamic stops, ATR-widened stops, and fallback stop checks for older positions without stored stop metadata. If `stop_loss_max_pct` is accidentally set below the minimum floor, the minimum floor wins.
+- `tests/test_smoke.py` - added coverage for tight dynamic stops widening to 4% and fixed/fallback stop checks respecting the 4% floor.
+
+**Behavior note:** With the current config, initial stops will generally land between 4% and 5% below entry: tight chart-based stops widen to 4%, while very wide dynamic stops still clamp at the existing 5% max.
+
+**Verification:** `python -m compileall -q src tests dashboard.py scripts`; `pytest tests/test_smoke.py -q --ignore=tmp` passed (21 tests, 2 existing warnings); `git diff --check` passed with CRLF normalization warnings only.
+
+**Revert:** Remove `stop_loss_min_pct` from `config/settings.yaml`; restore `stop_loss_pct` to its prior value; remove `_stop_loss_pcts()` and the minimum-floor widening/fallback usage from `src/trading/position_manager.py`; remove the two minimum-stop tests.
+
+---
+
+## [2026-04-27 | Session O] Entry Queue Observability
+
+**Purpose:** Make live and backtest queue behavior auditable so queued tickers can be reviewed and tuned instead of disappearing into a silent side path.
+
+**Modified files:**
+- `src/trading/entry_queue.py` - writes persistent queue lifecycle events to `data/queue_cache/queue_history.jsonl`: queued, replaced, triggered/rescored, fired, fire-skipped, cancelled, expired, restart-dropped, EOD never-triggered, and processing errors. Fired events include rescore, threshold, rescore type, order status, fill price, and quantity when available.
+- `src/trading/decision_engine.py` - queued buys now return the broker order object when one is placed, and LLM-close queue cancellations are logged with a cancellation reason.
+- `src/scheduler.py` - entry monitor now returns the queued-buy order result back into queue logging instead of discarding it.
+- `src/backtester/entry_queue.py` - records backtest queue processing errors in the in-memory queue history.
+- `dashboard.py` - adds a live Entry Queue History table on Positions & Orders and a Backtest Queue tab in the trade journal, with event counts and per-symbol lifecycle rows.
+
+**What this shows:** You can now see whether a stock was queued, replaced, touched the trigger, failed the rescore, placed an order, skipped execution, expired, or never triggered by EOD. This should make it much easier to tune queue thresholds and Fib proximity settings.
+
+**Verification:** `python -m compileall -q src tests dashboard.py scripts`; `pytest tests/test_smoke.py -q --ignore=tmp` passed (19 tests, 2 existing warnings); `git diff --check` passed with CRLF normalization warnings only.
+
+**Revert:** Remove the queue history writes from `src/trading/entry_queue.py`; restore `_place_queued_buy()` and the scheduler entry monitor to discard order results; remove queue error history from `src/backtester/entry_queue.py`; remove `QUEUE_HISTORY_FILE`, queue loader/table helpers, live queue panel, and backtest Queue tab from `dashboard.py`.
+
+---
+
+## [2026-04-27 | Session N] Backtest Entry Queue Simulation
+
+**Purpose:** Make the backtester simulate the live bot's deferred entry queue without touching live queue files.
+
+**New files:**
+- `src/backtester/entry_queue.py` - in-memory backtest queue that mirrors live support-bounce and resistance-breakout trigger checks, uses backtest-safe technical/news/LLM rescoring, expires entries at simulated EOD, and records queue history in results.
+
+**Modified files:**
+- `src/backtester/engine.py` - creates a `BacktestEntryQueue` per run; routes backtest HOLD/BUY setups into the queue using the same Fib support/resistance rules as live; replays queue checks between decision cycles on simulated intraday timestamps; sends queue-triggered buys through normal backtest sizing/execution; includes `entry_queue_log` in results.
+- `src/trading/decision_engine.py` - fixed the live resistance-queue proximity lookup to use `fib_proximity_pct`, so the live resistance queue path matches the technical signal schema.
+- `tests/test_smoke.py` - added an in-memory queue bounce-trigger smoke test.
+
+**Behavior note:** The live scheduler checks every 5 minutes, but the backtest market cache is 15-minute intraday bars. The simulator defaults to 15-minute queue checks so it does not repeatedly rescore the same candle; `entry_queue.backtest_monitor_interval_minutes` can override this.
+
+**Verification:** `python -m compileall -q src tests dashboard.py scripts`; `pytest tests/test_smoke.py -q --ignore=tmp` passed (19 tests, 2 existing warnings); `git diff --check` passed with CRLF normalization warnings only.
+
+**Revert:** Remove `src/backtester/entry_queue.py`; remove `BacktestEntryQueue` creation, queue routing, queue monitor calls, and `entry_queue_log` from `src/backtester/engine.py`; restore the old Fib proximity lookup in `src/trading/decision_engine.py`; remove the queue smoke test.
+
+---
+
+## [2026-04-27 | Session M] Backtest Integrity, Queue Sizing, Dashboard Data Fixes
+
+**Purpose:** Implement the pending live/backtest/dashboard fixes: prevent NaN score poisoning, make backtest news and forward-return calculations time-safe, carry deep-score sizing through queued buys, harden sizing/quote validation, and repair dashboard/reporting data mismatches.
+
+**Modified files:**
+- `src/analysis/deep_scorer.py` - renormalizes composite deep scores across only the dimensions actually returned by the LLM so missing dimensions no longer inflate or deflate scores.
+- `src/analysis/technicals.py` - guards ATR, MACD, SMA trend, Bollinger, OBV, Fib, ROC, RS/ETF, and composite averaging against NaN/inf values; averages only finite sub-scores.
+- `src/backtester/signals.py` - caps date-only backtest news at the 09:30 cycle instead of end of day; intraday cycles remain capped at their exact simulated timestamp.
+- `src/backtester/engine.py` - separates daily and intraday news cache keys; computes forward returns using five actual trading days; uses neutral regime fallback; validates quote prices before buys; uses configured trailing-stop percent; preserves `decisions_log` in normal results JSON; writes archive paths with POSIX separators; passes `run_id` into backtest postmortems.
+- `src/trading/entry_queue.py` - expires queued entries at New York market close with DST handling; stores and forwards `deep_size_mult` for queued buys.
+- `src/trading/decision_engine.py` - uses neutral regime fallback; rejects invalid/non-positive quotes before live/queued buy sizing; applies queued-buy `deep_size_mult`.
+- `src/trading/position_manager.py` - rejects invalid price/equity/buying power and invalid percentage config before sizing.
+- `src/broker/alpaca_broker.py` - writes `state.json` atomically via temp file plus `os.replace()`.
+- `src/learning/postmortem.py` - writes `run_id` and `stop_verdict`, and reads JSONL with `utf-8-sig`.
+- `dashboard.py` - fixes live/paper return display, parsed datetime decision sorting, backtest path normalization, BOM-safe JSONL reads, win-rate unit normalization, missing-pnl/side handling, Sharpe risk-free/actual-window calculation, and postmortem stop-verdict display.
+- `src/dashboard/archiver.py` and `src/backtester/reporter.py` - skip missing-PnL trades in win/loss stats, use risk-free adjusted Sharpe with actual backtest length, and normalize archived result paths.
+
+**Verification:** `python -m compileall -q src tests dashboard.py scripts`; `pytest tests/test_smoke.py -q --ignore=tmp` passed (18 tests, 2 existing warnings); `git diff --check` passed with CRLF normalization warnings only.
+
+**Revert:** Restore the previous scoring/composite logic in `deep_scorer.py` and `technicals.py`; restore date-keyed news cache and calendar-day forward return in `backtester/engine.py`; remove `deep_size_mult` from queue entries and queued buys; restore direct `state.json` writes; revert dashboard/reporting stat and path handling.
+
+---
+
+## [2026-04-27 | Session L] Safety Review Fixes
+
+**Purpose:** Fix critical live-order state drift and several review findings from the full-project audit: unconfirmed Alpaca fills, EOD queue crashes, disabled small-cap screening, downtrend exit blocking, live queue mutation during backtests, stale queue config paths, dead `pandas_ta` safety checks, and swallowed live-stop failures.
+
+**Modified files:**
+- `src/broker/alpaca_broker.py` — market orders now poll Alpaca and update local state only when a confirmed filled quantity and average fill price are returned; partial fills update only the confirmed quantity; unconfirmed accepted/rejected/canceled orders no longer synthesize quote fills. Native stop-order placement now returns success/failure, records `stop_order_status`, and raises on failed stop placement.
+- `src/trading/entry_queue.py` — fixed invalid EOD close-price formatting; queue trigger threshold now reads `trading.buy_threshold`; restart validation now reads `entry_queue.queue_rescore_min` with legacy fallback.
+- `src/learning/reflection.py` — fixed invalid queue-history close-price formatting in the LLM reflection prompt.
+- `src/screener/pre_market.py` — removed the hard-coded `$15` price floor that blocked all configured small-cap candidates; replaced optional `pandas_ta` ATR volatility filter with local ATR calculation.
+- `src/trading/position_manager.py` — replaced optional `pandas_ta` ATR stop-floor logic with local ATR calculation and re-applies the configured max stop cap after ATR widening.
+- `src/trading/decision_engine.py` — downtrend blocks now apply only to new BUY entries, allowing held positions to continue through close/review/urgent-news logic; queued buys now use regime-aware `max_positions`; confirmed Alpaca partial fills are treated as real entry fills for stop metadata; failed stop placement is logged as an unprotected live position.
+- `src/backtester/engine.py` — removed imports/calls to the live `entry_queue`, preventing backtests from firing or expiring `data/queue_cache/entry_queue.json`.
+- `tests/test_smoke.py` — made journal roundtrip use a project-local temp directory for sandboxed runs; made the unclamped dynamic-stop test explicitly disable `stop_loss_max_pct` so it does not depend on the active trading config.
+
+**Verification:** `python -m compileall -q src tests dashboard.py scripts`; `pytest tests/test_smoke.py -q --ignore=tmp` passed (18 tests).
+
+**Revert:** Restore the previous order-fill block in `alpaca_broker.py`; restore the old queue threshold lookups/format strings; re-add the screener `$15` floor and `pandas_ta` imports; restore the early downtrend return in `decision_engine.py`; re-add the live `entry_queue` import/calls in `backtester/engine.py`.
+
+---
+
 ## [2026-04-25 | Session K3] Indicator Score Normalization + All-Decision Tracking
 
 **Purpose:** Normalize all indicator sub-scores from [-1, 1] to [0, 1] for clean dashboard analysis; populate `fwd_5d_return` for BUY and SELL decisions (not just HOLDs); update report buckets and dashboard split threshold to match new scale; purge legacy data files.

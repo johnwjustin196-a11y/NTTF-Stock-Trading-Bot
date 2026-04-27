@@ -14,6 +14,7 @@ import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from ..analysis.news_sentiment import news_signal
 from ..analysis.technicals import technical_signal
@@ -24,6 +25,8 @@ from ..utils.logger import get_logger
 log = get_logger(__name__)
 
 _QUEUE_FILE = project_root() / "data" / "queue_cache" / "entry_queue.json"
+_HISTORY_FILE = _QUEUE_FILE.parent / "queue_history.jsonl"
+_ET = ZoneInfo("America/New_York")
 
 
 # ------------------------------------------------------------------ persistence
@@ -42,6 +45,36 @@ def _save(entries: list[dict]) -> None:
     _QUEUE_FILE.write_text(json.dumps(entries, indent=2, default=str), encoding="utf-8")
 
 
+def _append_history(event: str, entry: dict, extra: dict | None = None) -> None:
+    """Append one queue lifecycle event for later dashboard/EOD analysis."""
+    try:
+        _HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        now = datetime.now(timezone.utc)
+        row = {
+            "event": event,
+            "outcome": event,
+            "logged_at": now.isoformat(),
+            "date": (entry.get("queued_at") or now.isoformat())[:10],
+            "symbol": entry.get("symbol"),
+            "entry_type": entry.get("entry_type"),
+            "queued_at": entry.get("queued_at"),
+            "queued_cycle": entry.get("queued_cycle"),
+            "price_at_queue": entry.get("price_at_queue"),
+            "trigger_price": entry.get("trigger_price"),
+            "fib_ratio": entry.get("fib_ratio"),
+            "fib_direction": entry.get("fib_direction"),
+            "combined_score_at_queue": entry.get("combined_score_at_queue"),
+            "deep_size_mult": entry.get("deep_size_mult"),
+            "check_count": entry.get("check_count", 0),
+        }
+        if extra:
+            row.update(extra)
+        with open(_HISTORY_FILE, "a", encoding="utf-8") as f:
+            f.write(json.dumps(row, default=str) + "\n")
+    except Exception as exc:
+        log.debug(f"[entry_queue] history write failed: {exc}")
+
+
 # ------------------------------------------------------------------ public API
 
 def add_entry(
@@ -52,28 +85,40 @@ def add_entry(
     fib_direction: str,
     combined_score: float,
     price_at_queue: float = 0.0,
+    deep_size_mult: float = 1.0,
 ) -> None:
     """Queue a deferred entry.  Replaces any existing entry for the symbol."""
-    entries = [e for e in _load() if e["symbol"] != symbol]
+    entries: list[dict] = []
+    for old_entry in _load():
+        if old_entry.get("symbol") == symbol:
+            _append_history("replaced", old_entry)
+        else:
+            entries.append(old_entry)
     now = datetime.now(timezone.utc)
-    # Expire at 20:00 UTC (4 PM ET) on the same calendar day
-    expires = now.replace(hour=20, minute=0, second=0, microsecond=0)
+    now_et = now.astimezone(_ET)
+    # Expire at the New York market close; DST makes hardcoded UTC unsafe.
+    expires_et = now_et.replace(hour=16, minute=0, second=0, microsecond=0)
+    expires = expires_et.astimezone(timezone.utc)
     if expires <= now:                          # already past 4 PM — next day (edge case)
-        expires += timedelta(days=1)
-    entries.append({
+        expires_et += timedelta(days=1)
+    expires = expires_et.astimezone(timezone.utc)
+    entry = {
         "symbol":                  symbol,
         "queued_at":               now.isoformat(),
-        "queued_cycle":            now.strftime("%H:%M"),
+        "queued_cycle":            now_et.strftime("%H:%M"),
         "entry_type":              entry_type,    # "bounce_support" | "breakout_resistance"
         "price_at_queue":          round(price_at_queue, 4),
         "trigger_price":           round(trigger_price, 4),
         "fib_ratio":               fib_ratio,
         "fib_direction":           fib_direction,
         "combined_score_at_queue": round(combined_score, 4),
+        "deep_size_mult":          round(float(deep_size_mult or 1.0), 4),
         "expires_at":              expires.isoformat(),
         "check_count":             0,
-    })
+    }
+    entries.append(entry)
     _save(entries)
+    _append_history("queued", entry)
     log.info(
         f"[entry_queue] queued {symbol} {entry_type} "
         f"@ trigger={trigger_price:.2f} current={price_at_queue:.2f} "
@@ -81,9 +126,24 @@ def add_entry(
     )
 
 
-def remove_entry(symbol: str) -> None:
-    entries = [e for e in _load() if e["symbol"] != symbol]
-    _save(entries)
+def remove_entry(
+    symbol: str,
+    reason: str = "removed",
+    extra: dict | None = None,
+    log_history: bool = True,
+) -> list[dict]:
+    kept: list[dict] = []
+    removed: list[dict] = []
+    for entry in _load():
+        if entry.get("symbol") == symbol:
+            removed.append(entry)
+        else:
+            kept.append(entry)
+    _save(kept)
+    if log_history:
+        for entry in removed:
+            _append_history(reason, entry, extra)
+    return removed
 
 
 def has_entry(symbol: str) -> bool:
@@ -103,6 +163,13 @@ def get_entries() -> list[dict]:
     ]
 
 
+def _trading_value(name: str, default: float) -> float:
+    cfg = load_config()
+    trading = cfg.get("trading", {}) or {}
+    legacy_thresholds = trading.get("thresholds", {}) or {}
+    return float(trading.get(name, legacy_thresholds.get(name, default)))
+
+
 def expire_entries() -> int:
     """Remove expired entries.  Returns count removed."""
     all_entries = _load()
@@ -110,6 +177,9 @@ def expire_entries() -> int:
     live = [e for e in all_entries if datetime.fromisoformat(e["expires_at"]) > now]
     removed = len(all_entries) - len(live)
     if removed:
+        for entry in all_entries:
+            if datetime.fromisoformat(entry["expires_at"]) <= now:
+                _append_history("expired", entry)
         _save(live)
         log.info(f"[entry_queue] expired {removed} entries")
     return removed
@@ -268,8 +338,7 @@ def check_and_fire(broker: Broker, execute_fn: Any) -> list[str]:
     # Bump counters once per cycle so we can throttle LLM to every 3rd check
     _bump_check_counts(entries)
 
-    cfg        = load_config()
-    buy_thresh = float(cfg.get("trading", {}).get("thresholds", {}).get("buy_threshold", 0.35))
+    buy_thresh = _trading_value("buy_threshold", 0.35)
     fired: list[str] = []
 
     for entry in entries:
@@ -302,17 +371,44 @@ def check_and_fire(broker: Broker, execute_fn: Any) -> list[str]:
                     f"{score:+.3f} (threshold {buy_thresh:+.3f})"
                 )
 
+            rescore_type = "full_llm" if use_llm else "fast_no_llm"
+            _append_history(
+                "triggered",
+                entry,
+                {
+                    "rescore": round(score, 4),
+                    "buy_threshold": buy_thresh,
+                    "rescore_type": rescore_type,
+                    "passed_threshold": bool(score >= buy_thresh),
+                },
+            )
+
             if score >= buy_thresh:
                 # Executed — remove (decision logged to decisions_log.jsonl at EOD)
-                remove_entry(symbol)
+                remove_entry(symbol, log_history=False)
                 tags = {
                     "entry_type":    entry_type,
                     "fib_ratio":     entry["fib_ratio"],
                     "trigger_price": entry["trigger_price"],
                     "queue_score":   entry["combined_score_at_queue"],
+                    "deep_size_mult": entry.get("deep_size_mult", 1.0),
                 }
-                execute_fn(broker, symbol, tags)
-                fired.append(symbol)
+                placed = execute_fn(broker, symbol, tags)
+                _append_history(
+                    "fired" if placed is not None else "fire_skipped",
+                    entry,
+                    {
+                        "rescore": round(score, 4),
+                        "buy_threshold": buy_thresh,
+                        "rescore_type": rescore_type,
+                        "execution_result": "placed" if placed is not None else "skipped",
+                        "order_status": getattr(placed, "status", None),
+                        "filled_price": getattr(placed, "filled_price", None),
+                        "qty": getattr(placed, "quantity", None),
+                    },
+                )
+                if placed is not None:
+                    fired.append(symbol)
             else:
                 # Score too low this time — leave in queue, try again next cycle
                 log.info(
@@ -321,6 +417,7 @@ def check_and_fire(broker: Broker, execute_fn: Any) -> list[str]:
                 )
 
         except Exception as exc:
+            _append_history("error", entry, {"error": str(exc)[:200]})
             log.warning(f"[entry_queue] error processing {symbol}: {exc}")
             # Don't remove on exception — try again next cycle
 
@@ -344,8 +441,7 @@ def log_eod_outcomes() -> None:
     if not entries:
         return
 
-    history_path = _QUEUE_FILE.parent / "queue_history.jsonl"
-    history_path.parent.mkdir(parents=True, exist_ok=True)
+    _HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     rows: list[str] = []
     for entry in entries:
@@ -375,19 +471,25 @@ def log_eod_outcomes() -> None:
             "close_price":           close,
             "pct_queue_to_close":    pct_from_queue,
             "pct_trigger_to_close":  pct_from_trigger,
+            "event":                 "never_triggered",
             "outcome":               "never_triggered",
         }
         rows.append(json.dumps(row))
+        close_s = f"{close:.2f}" if close is not None else "n/a"
+        trig_pct_s = (
+            "%+.2f%%" % pct_from_trigger
+            if pct_from_trigger is not None else "n/a"
+        )
         log.info(
             f"[entry_queue] EOD {symbol}: queued={price_q:.2f} "
-            f"trigger={trigger:.2f} close={close:.2f if close else 'n/a'} "
-            f"({'%+.2f%%' % pct_from_trigger if pct_from_trigger is not None else 'n/a'} from trigger)"
+            f"trigger={trigger:.2f} close={close_s} "
+            f"({trig_pct_s} from trigger)"
         )
 
     if rows:
-        with open(history_path, "a", encoding="utf-8") as f:
+        with open(_HISTORY_FILE, "a", encoding="utf-8") as f:
             f.write("\n".join(rows) + "\n")
-        log.info(f"[entry_queue] wrote {len(rows)} EOD outcomes to {history_path.name}")
+        log.info(f"[entry_queue] wrote {len(rows)} EOD outcomes to {_HISTORY_FILE.name}")
 
 
 # ------------------------------------------------------------------ startup validation
@@ -402,8 +504,12 @@ def validate_on_restart(broker: Broker) -> None:
         return
 
     cfg = load_config()
+    legacy_thresholds = (cfg.get("trading", {}) or {}).get("thresholds", {}) or {}
     min_score = float(
-        cfg.get("trading", {}).get("thresholds", {}).get("queue_rescore_min", 0.0)
+        (cfg.get("entry_queue", {}) or {}).get(
+            "queue_rescore_min",
+            legacy_thresholds.get("queue_rescore_min", 0.0),
+        )
     )
 
     kept: list[str] = []
@@ -421,7 +527,11 @@ def validate_on_restart(broker: Broker) -> None:
                 )
             else:
                 dropped.append(symbol)
-                remove_entry(symbol)
+                remove_entry(
+                    symbol,
+                    reason="restart_rescore_drop",
+                    extra={"rescore": round(score, 4), "min_score": min_score},
+                )
                 log.info(
                     f"[entry_queue] restart: dropped {symbol} — "
                     f"rescore={score:+.3f} < min {min_score:+.3f}"

@@ -326,9 +326,9 @@ def job_entry_monitor() -> None:
     try:
         broker = get_broker()
 
-        def _execute(b, symbol: str, tags: dict) -> None:
+        def _execute(b, symbol: str, tags: dict):
             from .trading.decision_engine import _place_queued_buy  # noqa: PLC0415
-            _place_queued_buy(b, symbol, tags)
+            return _place_queued_buy(b, symbol, tags)
 
         fired = entry_queue.check_and_fire(broker, _execute)
         if fired:

@@ -6,6 +6,7 @@ factory, config loader, journaling, and reflection with mocked signals.
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -39,22 +40,32 @@ def test_sim_broker_basics():
 
 
 def test_journal_roundtrip():
-    import tempfile, os
     from src.utils import config as cfg_mod
 
-    with tempfile.TemporaryDirectory() as td:
-        cfg_mod.load_config.cache_clear()
-        cfg = cfg_mod.load_config()
-        original = cfg["paths"]["journal_dir"]
-        cfg["paths"]["journal_dir"] = td
+    td = (Path("tests") / ".tmp" / "journal_roundtrip").resolve()
+    td.mkdir(parents=True, exist_ok=True)
+    for old in td.glob("*.jsonl"):
+        old.unlink()
+
+    cfg_mod.load_config.cache_clear()
+    cfg = cfg_mod.load_config()
+    original = cfg["paths"]["journal_dir"]
+    cfg["paths"]["journal_dir"] = str(td)
+    try:
+        from src.learning.journal import append_entry, load_today_journal
+        append_entry({"symbol": "AAPL", "decision": {"action": "BUY"}})
+        entries = load_today_journal()
+        assert len(entries) == 1
+        assert entries[0]["symbol"] == "AAPL"
+    finally:
+        cfg["paths"]["journal_dir"] = original
+        for old in td.glob("*.jsonl"):
+            old.unlink()
         try:
-            from src.learning.journal import append_entry, load_today_journal
-            append_entry({"symbol": "AAPL", "decision": {"action": "BUY"}})
-            entries = load_today_journal()
-            assert len(entries) == 1
-            assert entries[0]["symbol"] == "AAPL"
-        finally:
-            cfg["paths"]["journal_dir"] = original
+            td.rmdir()
+            td.parent.rmdir()
+        except OSError:
+            pass
 
 
 def test_position_sizing():
@@ -72,6 +83,7 @@ def test_dynamic_stop_from_prior_candles():
     """Dynamic stop = min(low) of the last N candles *before* the current one.
     Width in % should vary trade to trade based on what the chart looks like.
     """
+    from src.utils import config as cfg_mod
     from src.trading.position_manager import compute_dynamic_stop
 
     bars = pd.DataFrame({
@@ -84,12 +96,19 @@ def test_dynamic_stop_from_prior_candles():
     mock_broker = MagicMock()
     mock_broker.get_bars.return_value = bars
 
-    # Entry at 104 -> prior candles (excluding last, so indices 0..3) have
-    # lows [99, 98.5, 97, 100]. With lookback=2 we take the last 2: [97, 100].
-    # min = 97. Without a max-% clamp (default null), stop should be exactly 97.
-    result = compute_dynamic_stop(mock_broker, "TEST", 104.0)
-    assert result["source"] == "dynamic"
-    assert abs(result["stop"] - 97.0) < 0.01
+    cfg_mod.load_config.cache_clear()
+    cfg = cfg_mod.load_config()
+    original = cfg["trading"].get("stop_loss_max_pct")
+    cfg["trading"]["stop_loss_max_pct"] = None
+    try:
+        # Entry at 104 -> prior candles (excluding last, so indices 0..3) have
+        # lows [99, 98.5, 97, 100]. With lookback=2 we take the last 2: [97, 100].
+        # min = 97. With no max-% clamp, stop should be exactly 97.
+        result = compute_dynamic_stop(mock_broker, "TEST", 104.0)
+        assert result["source"] == "dynamic"
+        assert abs(result["stop"] - 97.0) < 0.01
+    finally:
+        cfg["trading"]["stop_loss_max_pct"] = original
 
 
 def test_dynamic_stop_respects_optional_clamp(monkeypatch):
@@ -117,6 +136,74 @@ def test_dynamic_stop_respects_optional_clamp(monkeypatch):
         assert abs(result["stop"] - 104.0 * 0.95) < 0.01
     finally:
         cfg["trading"]["stop_loss_max_pct"] = original
+
+
+def test_dynamic_stop_respects_minimum_floor():
+    """A tight candle-low stop should widen to the configured minimum stop pct."""
+    from src.utils import config as cfg_mod
+    from src.trading.position_manager import compute_dynamic_stop
+
+    cfg_mod.load_config.cache_clear()
+    cfg = cfg_mod.load_config()
+    orig_min = cfg["trading"].get("stop_loss_min_pct")
+    orig_pct = cfg["trading"].get("stop_loss_pct")
+    orig_max = cfg["trading"].get("stop_loss_max_pct")
+    cfg["trading"]["stop_loss_min_pct"] = 0.04
+    cfg["trading"]["stop_loss_pct"] = 0.02
+    cfg["trading"]["stop_loss_max_pct"] = 0.05
+    try:
+        bars = pd.DataFrame({
+            "open": [100, 100, 100, 100, 100],
+            "high": [101, 101, 101, 101, 101],
+            "low":  [99.4, 99.2, 99.1, 99.0, 99.5],
+            "close":[100.2, 100.3, 100.1, 100.4, 100.5],
+            "volume":[1000]*5,
+        })
+        mock_broker = MagicMock()
+        mock_broker.get_bars.return_value = bars
+        result = compute_dynamic_stop(mock_broker, "TEST", 100.0)
+        assert result["source"] == "dynamic_widened"
+        assert abs(result["stop"] - 96.0) < 0.01
+        assert abs(result["pct"] - 0.04) < 0.001
+    finally:
+        cfg["trading"]["stop_loss_min_pct"] = orig_min
+        cfg["trading"]["stop_loss_pct"] = orig_pct
+        cfg["trading"]["stop_loss_max_pct"] = orig_max
+
+
+def test_fixed_stop_respects_minimum_floor():
+    from src.broker.base import Position
+    from src.utils import config as cfg_mod
+    from src.trading.position_manager import compute_dynamic_stop, should_flatten_for_risk
+
+    cfg_mod.load_config.cache_clear()
+    cfg = cfg_mod.load_config()
+    orig_mode = cfg["trading"].get("stop_loss_mode")
+    orig_min = cfg["trading"].get("stop_loss_min_pct")
+    orig_pct = cfg["trading"].get("stop_loss_pct")
+    cfg["trading"]["stop_loss_mode"] = "fixed"
+    cfg["trading"]["stop_loss_min_pct"] = 0.04
+    cfg["trading"]["stop_loss_pct"] = 0.02
+    try:
+        result = compute_dynamic_stop(MagicMock(), "TEST", 100.0)
+        assert result["source"] == "fixed_pct"
+        assert abs(result["stop"] - 96.0) < 0.01
+        assert should_flatten_for_risk(
+            Position(symbol="TEST", quantity=1, avg_entry=100.0,
+                     market_value=97.0, unrealized_pl=-3.0),
+            97.0,
+        ) == (False, "")
+        should_flatten, why = should_flatten_for_risk(
+            Position(symbol="TEST", quantity=1, avg_entry=100.0,
+                     market_value=95.9, unrealized_pl=-4.1),
+            95.9,
+        )
+        assert should_flatten is True
+        assert "stop-loss hit" in why
+    finally:
+        cfg["trading"]["stop_loss_mode"] = orig_mode
+        cfg["trading"]["stop_loss_min_pct"] = orig_min
+        cfg["trading"]["stop_loss_pct"] = orig_pct
 
 
 def test_trade_quality_classifier():
@@ -458,6 +545,65 @@ def test_bearish_regime_filters_weak_buys():
 
     assert result["action"] == "HOLD"
     assert "weak quality in bearish regime" in result["reason"]
+
+
+def test_backtest_entry_queue_fires_in_memory_bounce():
+    from src.backtester.entry_queue import BacktestEntryQueue
+
+    class FakeBroker:
+        def get_bars(self, symbol, timeframe="15m", limit=10):
+            return pd.DataFrame([
+                {"open": 10.20, "high": 10.30, "low": 9.95, "close": 10.00, "volume": 1000},
+                {"open": 10.05, "high": 10.30, "low": 10.02, "close": 10.20, "volume": 1200},
+            ])
+
+    queue = BacktestEntryQueue({"enabled": True, "bounce_touch_pct": 0.01})
+    sim_dt = datetime(2026, 4, 27, 9, 30)
+    queue.add_entry(
+        symbol="TEST",
+        entry_type="bounce_support",
+        trigger_price=10.0,
+        fib_ratio=0.618,
+        fib_direction="support",
+        combined_score=0.40,
+        price_at_queue=10.50,
+        deep_size_mult=0.75,
+        sim_dt=sim_dt,
+    )
+
+    executed = []
+
+    def execute_fn(symbol, tags, score, signals):
+        executed.append((symbol, tags, score, signals))
+        placed = MagicMock()
+        placed.status = "filled"
+        placed.quantity = 10
+        placed.filled_price = 10.20
+        return placed
+
+    with patch("src.backtester.entry_queue.technical_signal",
+               return_value={"score": 0.50, "details": {}, "reason": "mock"}), \
+         patch("src.backtester.entry_queue.backtest_news_signal",
+               return_value={"score": 0.40, "details": {}, "reason": "mock"}):
+        fired = queue.check_and_fire(
+            broker=FakeBroker(),
+            sim_dt=datetime(2026, 4, 27, 9, 45),
+            breadth={"score": 0.0, "reason": "mock"},
+            regime={"label": "neutral", "score": 0.0},
+            newsapi_key="",
+            weights={"technicals": 0.35, "news": 0.15, "breadth": 0.20, "llm": 0.30},
+            buy_threshold=0.35,
+            use_llm=False,
+            execute_fn=execute_fn,
+            news_cache={},
+        )
+
+    assert fired
+    assert queue.entries == []
+    assert executed[0][0] == "TEST"
+    assert executed[0][1]["deep_size_mult"] == 0.75
+    assert any(row["event"] == "queued" for row in queue.history)
+    assert any(row["event"] == "fired" for row in queue.history)
 
 
 def test_trailing_stop_percentage_trail_only_raises():

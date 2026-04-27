@@ -25,7 +25,7 @@ def _append_jsonl(src: Path, dst: Path) -> int:
     if not src.exists():
         return 0
     count = 0
-    with src.open("r", encoding="utf-8") as fh:
+    with src.open("r", encoding="utf-8-sig") as fh:
         lines = fh.readlines()
     if not lines:
         return 0
@@ -116,6 +116,28 @@ def _prune_lessons_md(path: Path) -> None:
     rebuilt = preamble + "".join(h + b for _, h, b in blocks)
     if rebuilt != content:
         path.write_text(rebuilt, encoding="utf-8")
+
+
+def _safe_float(value, default=None):
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return default
+    return out
+
+
+def _risk_free_rate() -> float:
+    try:
+        from src.utils.config import load_config
+        cfg = load_config()
+        raw = (
+            cfg.get("dashboard", {}).get("risk_free_rate")
+            or cfg.get("backtest", {}).get("risk_free_rate")
+            or 0.04
+        )
+        return float(raw)
+    except Exception:
+        return 0.04
 
 
 # ---------------------------------------------------------------------------
@@ -266,11 +288,12 @@ def archive_backtest_run(results: dict, run_meta: dict, data_dir: Path) -> None:
         final_equity = float(curve[-1]["equity"]) if curve else starting_cash
         total_return_pct = round((final_equity / starting_cash - 1) * 100, 2) if starting_cash else 0
 
-        wins = [t for t in trades if t.get("pnl", 0) > 0]
-        losses = [t for t in trades if t.get("pnl", 0) <= 0]
-        win_rate = round(len(wins) / len(trades), 4) if trades else 0
-        gross_wins = sum(t["pnl"] for t in wins)
-        gross_losses = abs(sum(t["pnl"] for t in losses))
+        scored_trades = [t for t in trades if _safe_float(t.get("pnl")) is not None]
+        wins = [t for t in scored_trades if (_safe_float(t.get("pnl"), 0.0) or 0.0) > 0]
+        losses = [t for t in scored_trades if (_safe_float(t.get("pnl"), 0.0) or 0.0) <= 0]
+        win_rate = round(len(wins) / len(scored_trades), 4) if scored_trades else 0
+        gross_wins = sum(_safe_float(t.get("pnl"), 0.0) or 0.0 for t in wins)
+        gross_losses = abs(sum(_safe_float(t.get("pnl"), 0.0) or 0.0 for t in losses))
         profit_factor = round(gross_wins / gross_losses, 2) if gross_losses > 0 else None
 
         # Annualised Sharpe
@@ -283,7 +306,9 @@ def archive_backtest_run(results: dict, run_meta: dict, data_dir: Path) -> None:
             prev = e
         if len(daily_rets) > 1:
             sd = statistics.stdev(daily_rets)
-            sharpe = round(statistics.mean(daily_rets) / sd * (252 ** 0.5), 2) if sd > 0 else 0.0
+            rf_daily = _risk_free_rate() / 252.0
+            excess = [r - rf_daily for r in daily_rets]
+            sharpe = round(statistics.mean(excess) / sd * (len(excess) ** 0.5), 2) if sd > 0 else 0.0
         else:
             sharpe = 0.0
 
@@ -304,7 +329,7 @@ def archive_backtest_run(results: dict, run_meta: dict, data_dir: Path) -> None:
             "label": run_meta.get("label", ""),
             "date": datetime.now().date().isoformat(),
             "days": run_meta.get("days", 0),
-            "results_file": str(run_meta.get("results_file", "")),
+            "results_file": str(run_meta.get("results_file", "")).replace("\\", "/"),
             "total_return_pct": total_return_pct,
             "win_rate": win_rate,
             "sharpe": sharpe,

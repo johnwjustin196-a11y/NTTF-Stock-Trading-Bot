@@ -475,14 +475,19 @@ def _llm_reflect(outcomes: list[dict], cfg: dict, *, today_regime: str,
         for q in queue_history:
             close = q.get("close_price")
             pct_t = q.get("pct_trigger_to_close")
+            close_s = f"{float(close):.2f}" if close is not None else "n/a"
+            missed_s = (
+                "MISSED by " + "%+.2f%%" % pct_t
+                if pct_t is not None else "n/a"
+            )
             q_lines.append(
                 f"- **{q['symbol']}** {q.get('entry_type','?')} | "
                 f"queued @ {q.get('price_at_queue', 0):.2f} | "
                 f"trigger @ {q.get('trigger_price', 0):.2f} "
                 f"(Fib {(q.get('fib_ratio') or 0)*100:.1f}%) | "
-                f"close @ {close:.2f if close else 'n/a'} | "
+                f"close @ {close_s} | "
                 f"score={q.get('combined_score_at_queue', 0):+.3f} | "
-                + (f"trigger {'MISSED by ' + '%+.2f%%' % pct_t if pct_t is not None else 'n/a'}")
+                + f"trigger {missed_s}"
             )
         queue_block = "\n" + "\n".join(q_lines) + "\n"
 

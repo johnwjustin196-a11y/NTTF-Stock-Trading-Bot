@@ -31,6 +31,7 @@ from ..utils.logger import get_logger
 from .broker import BacktestBroker
 from .data_cache import DataCache
 from .deep_score_cache import DeepScoreCache
+from .entry_queue import BacktestEntryQueue
 from .signals import (
     backtest_breadth,
     backtest_llm_signal,
@@ -39,7 +40,6 @@ from .signals import (
     backtest_trend,
     prefetch_alpaca_news_bulk,
 )
-from ..trading import entry_queue
 
 log = get_logger(__name__)
 
@@ -59,6 +59,22 @@ _CYCLE_TIMES = [
 ]
 
 
+def _news_cache_key(symbol: str, as_of) -> tuple[str, str]:
+    """Keep daily planning news separate from intraday cycle news."""
+    if isinstance(as_of, datetime):
+        return (symbol.upper(), as_of.isoformat(timespec="minutes"))
+    return (symbol.upper(), str(as_of)[:10])
+
+
+def _fifth_trading_day_after(day: date, all_days: list[date]) -> date | None:
+    try:
+        idx = all_days.index(day)
+    except ValueError:
+        return None
+    target_idx = idx + 5
+    return all_days[target_idx] if target_idx < len(all_days) else None
+
+
 def run_backtest(
     symbols: list[str],
     days: int = 90,
@@ -68,6 +84,7 @@ def run_backtest(
     verbose: bool = True,
     skip_days: int = 0,
     end_date: "date | None" = None,
+    run_id: str | None = None,
 ) -> dict:
     """Run a walk-forward backtest and return results dict.
 
@@ -80,6 +97,7 @@ def run_backtest(
       all_fills      — list of every fill (audit trail)
     """
     cfg = load_config()
+    run_id = run_id or ""
     newsapi_key = cfg.get("secrets", {}).get("newsapi_key", "") or ""
     weights = cfg["signals"]["weights"]
     t_cfg = cfg["trading"]
@@ -197,6 +215,7 @@ def run_backtest(
     _news_cache: dict = {}
     # Postmortem writes buffered here during cycles, flushed once at end of day.
     _postmortem_queue: list[dict] = []
+    bt_entry_queue = BacktestEntryQueue(cfg.get("entry_queue", {}) or {})
 
     # ------------------------------------------------------------------ loop
     for i, sim_date in enumerate(trading_days):
@@ -299,36 +318,10 @@ def run_backtest(
         _cb_tightened = False       # circuit breaker stop-tightening fires once per day
 
         # --- Six decision cycles (mirrors live bot: 09:30, 11:30, 12:30, 13:30, 14:30, 15:30) ---
-        for cycle_label, skip_llm in _CYCLE_TIMES:
+        for cycle_idx, (cycle_label, skip_llm) in enumerate(_CYCLE_TIMES):
             h, m = map(int, cycle_label.split(":"))
             sim_dt = datetime.combine(sim_date, datetime.min.time()).replace(hour=h, minute=m)
             broker.set_sim_dt(sim_dt)
-
-            # Entry queue: fire any deferred BUY entries whose S/R conditions are now met
-            def _fast_queue_execute(_broker, _sym, _tags):
-                try:
-                    _account = _broker.get_account()
-                    _dec = {
-                        "action": "BUY",
-                        "reason": (
-                            f"entry_queue:{_tags.get('entry_type', 'bounce')} "
-                            f"trigger={float(_tags.get('trigger_price', 0)):.2f} "
-                            f"score={float(_tags.get('queue_score', 0)):+.3f}"
-                        ),
-                    }
-                    _placed = _execute_buy(_broker, _sym, _dec, _account, t_cfg)
-                    if _placed and _placed.status == "filled":
-                        cycle_log.append({
-                            "date": str(sim_date), "cycle": cycle_label,
-                            "symbol": _sym, "action": "BUY",
-                            "qty": _placed.quantity,
-                            "price": _placed.filled_price,
-                            "reason": _dec["reason"][:120],
-                            "tags": _tags,
-                        })
-                except Exception as _e:
-                    log.debug(f"[backtest] entry_queue execute {_sym}: {_e}")
-            entry_queue.check_and_fire(broker, _fast_queue_execute)
 
             # Circuit breaker: block BUYs if down more than threshold from day start
             cfg_cb = t_cfg.get("circuit_breaker", {})
@@ -438,6 +431,8 @@ def run_backtest(
                         cycle_dt=sim_dt,
                         news_cache=_news_cache,
                         closed_today=_closed_today,
+                        bt_queue=bt_entry_queue,
+                        queue_cfg=cfg.get("entry_queue", {}) or {},
                     )
                 except Exception as e:
                     log.debug(f"[backtest] {sym} decide failed: {e}")
@@ -559,7 +554,7 @@ def run_backtest(
             held = {p.symbol: p for p in account.positions}
 
             from ..trading.decision_engine import sort_buys_by_quality, _resolve_max_positions
-            max_pos = _resolve_max_positions(t_cfg, regime.get("label", "neutral"))
+            max_pos = _resolve_max_positions(t_cfg, regime.get("label") or "neutral")
             buys = sort_buys_by_quality(
                 [(s, d) for s, d in decisions.items() if d["action"] == "BUY"]
             )
@@ -604,13 +599,39 @@ def run_backtest(
                 except Exception as e:
                     log.debug(f"[backtest] {sym} BUY exec failed: {e}")
 
+            next_dt = (
+                datetime.combine(sim_date, datetime.min.time()).replace(
+                    hour=int(_CYCLE_TIMES[cycle_idx + 1][0].split(":")[0]),
+                    minute=int(_CYCLE_TIMES[cycle_idx + 1][0].split(":")[1]),
+                )
+                if cycle_idx + 1 < len(_CYCLE_TIMES)
+                else datetime.combine(sim_date, datetime.min.time()).replace(hour=15, minute=55)
+            )
+            _run_entry_queue_monitor(
+                broker=broker,
+                bt_queue=bt_entry_queue,
+                start_dt=sim_dt,
+                end_dt=next_dt,
+                breadth=breadth,
+                regime=regime,
+                newsapi_key=newsapi_key,
+                weights=weights,
+                t_cfg=t_cfg,
+                queue_cfg=cfg.get("entry_queue", {}) or {},
+                use_llm=use_llm,
+                cycle_log=cycle_log,
+                decisions_log=decisions_log,
+                sim_date=sim_date,
+                news_cache=_news_cache,
+                fingerprints_file=_BT_FINGERPRINTS,
+            )
+
         # --- End-of-day stop/TP check ---
         eod_dt = datetime.combine(sim_date, datetime.min.time()).replace(hour=15, minute=55)
         broker.set_sim_dt(eod_dt)
         # Capture positions before check_stops removes them
         pre_stop_positions = {p.symbol: p for p in broker.get_positions()}
         triggered = broker.check_stops()
-        entry_queue.expire_entries()
         for ev in triggered:
             cycle_log.append({
                 "date": str(sim_date), "cycle": "EOD",
@@ -645,6 +666,7 @@ def run_backtest(
         # --- Equity snapshot ---
         eod_close = datetime.combine(sim_date, datetime.min.time()).replace(hour=16, minute=0)
         broker.set_sim_dt(eod_close)
+        bt_entry_queue.expire(eod_close)
         account = broker.get_account()
         equity_curve.append({
             "date": str(sim_date),
@@ -664,6 +686,8 @@ def run_backtest(
                         postmortems_file=_BT_POSTMORTEMS,
                         lessons_file=_BT_LESSONS,
                         use_llm=_pm["use_llm"],
+                        run_id=run_id,
+                        stop_verdict=_pm.get("stop_verdict"),
                     )
                 except Exception as _pe:
                     log.debug(f"[backtest] postmortem {_pm['sym']}: {_pe}")
@@ -753,7 +777,10 @@ def run_backtest(
             continue
         try:
             _d = date.fromisoformat(_row["date"])
-            _fwd_p = cache.price_at(_row["symbol"], _d + timedelta(days=8))
+            _fwd_day = _fifth_trading_day_after(_d, all_days)
+            if _fwd_day is None:
+                continue
+            _fwd_p = cache.price_at(_row["symbol"], _fwd_day)
             _cur_p = float(_row["current_price"])
             if _fwd_p and _cur_p > 0:
                 _row["fwd_5d_return"] = round((_fwd_p - _cur_p) / _cur_p, 4)
@@ -768,6 +795,7 @@ def run_backtest(
         "deep_score_runs": deep_score_runs,
         "starting_cash": starting_cash,
         "all_fills": broker._all_fills,
+        "entry_queue_log": bt_entry_queue.history,
     }
 
 
@@ -808,6 +836,8 @@ def _decide(
     cycle_dt: "datetime | None" = None,
     news_cache: "dict | None" = None,
     closed_today: "set | None" = None,
+    bt_queue: BacktestEntryQueue | None = None,
+    queue_cfg: dict | None = None,
 ) -> dict:
     """Backtest-specific version of decide_for_ticker."""
     from ..analysis import technical_signal
@@ -826,8 +856,12 @@ def _decide(
         except Exception:
             pass
 
-    tech = technical_signal(broker, symbol, regime=str(regime.get("label", "")) if isinstance(regime, dict) else None)
-    _nkey = (symbol.upper(), str(sim_date))
+    tech = technical_signal(
+        broker,
+        symbol,
+        regime=str(regime.get("label") or "neutral") if isinstance(regime, dict) else None,
+    )
+    _nkey = _news_cache_key(symbol, cycle_dt if cycle_dt else sim_date)
     if news_cache is not None and _nkey in news_cache:
         news = news_cache[_nkey]
     else:
@@ -934,7 +968,7 @@ def _decide(
     # Quality gate in adverse regimes — skip when LLM is disabled because the
     # combined score is structurally lower without the LLM weight, making "weak"
     # a misleading label rather than a genuine low-conviction signal.
-    regime_label = str(regime.get("label", "")).lower()
+    regime_label = str(regime.get("label") or "neutral").lower()
     if (
         action == "BUY"
         and use_llm
@@ -962,13 +996,13 @@ def _decide(
         try:
             from ..learning.rules import check_promoted_rules
             _promote_dec = {
-                "regime": regime.get("label", ""),
+                "regime": regime.get("label") or "neutral",
                 "trend": trend.get("label", ""),
                 "quality": quality.get("label", ""),
                 "action": "BUY",
                 "signals": {"breadth": breadth.get("score", 0.0)},
             }
-            _blocks = check_promoted_rules(_promote_dec, regime=regime.get("label"))
+            _blocks = check_promoted_rules(_promote_dec, regime=regime.get("label") or "neutral")
             if _blocks:
                 action = "HOLD"
                 deep_note += f" | {_blocks[0][:60]}"
@@ -1017,6 +1051,90 @@ def _decide(
             action = "HOLD"
             deep_note += f" | {_blk_reason}"
 
+    q_cfg = queue_cfg or {}
+    sim_dt_for_queue = cycle_dt if cycle_dt else datetime.combine(sim_date, datetime.min.time())
+    if bt_queue is not None and llm_action == "CLOSE" and not position and bt_queue.has_entry(symbol):
+        bt_queue.remove_entry(symbol, reason="llm_close_cancel")
+        deep_note += " | queue_cancelled_by_llm_close"
+
+    fib_d = tech.get("details", {}) or {}
+    fib_dir = str(fib_d.get("fib_direction") or "").lower()
+    fib_price = fib_d.get("fib_nearest_price")
+    fib_ratio = fib_d.get("fib_nearest_ratio")
+    fib_prox_pct = fib_d.get("fib_proximity_pct")
+    try:
+        fib_price_f = float(fib_price) if fib_price is not None else None
+    except Exception:
+        fib_price_f = None
+    try:
+        fib_prox_pct_f = float(fib_prox_pct) if fib_prox_pct is not None else None
+    except Exception:
+        fib_prox_pct_f = None
+    try:
+        fib_prox_ratio = fib_prox_pct_f / 100.0 if fib_prox_pct_f is not None else float(fib_d.get("fib_proximity", 1.0))
+    except Exception:
+        fib_prox_ratio = 1.0
+
+    if (
+        bt_queue is not None
+        and q_cfg.get("enabled", False)
+        and action == "BUY"
+        and not position
+        and fib_dir == "resistance"
+        and fib_prox_ratio < 0.03
+        and fib_price_f is not None
+        and fib_price_f > 0
+    ):
+        action = "HOLD"
+        deep_note += " | queued:breakout_resistance"
+        try:
+            last_price = float(fib_d.get("last", 0) or 0)
+            bt_queue.add_entry(
+                symbol=symbol,
+                entry_type="breakout_resistance",
+                trigger_price=fib_price_f,
+                fib_ratio=float(fib_ratio or 0),
+                fib_direction="resistance",
+                combined_score=combined,
+                price_at_queue=last_price,
+                deep_size_mult=deep_size_mult,
+                sim_dt=sim_dt_for_queue,
+            )
+        except Exception as exc:
+            log.debug("[backtest-queue] %s resistance queue add failed: %s", symbol, exc)
+
+    if bt_queue is not None and q_cfg.get("enabled", False) and action == "HOLD" and not position:
+        score_min = float(q_cfg.get("queue_score_min", 0.28))
+        near_pct = float(q_cfg.get("near_level_pct", 0.05))
+        tol_pct = float(
+            load_config().get("signals", {}).get("technicals", {}).get("fib_tolerance", 0.02)
+        ) * 100
+        if (
+            combined >= score_min
+            and fib_dir == "support"
+            and fib_price_f is not None
+            and fib_price_f > 0
+            and fib_prox_pct_f is not None
+            and fib_prox_pct_f > tol_pct
+        ):
+            try:
+                last_price = float(fib_d.get("last", 0) or 0)
+                if last_price > 0 and (last_price - fib_price_f) / last_price <= near_pct:
+                    bt_queue.add_entry(
+                        symbol=symbol,
+                        entry_type="bounce_support",
+                        trigger_price=fib_price_f,
+                        fib_ratio=float(fib_ratio or 0),
+                        fib_direction="support",
+                        combined_score=combined,
+                        price_at_queue=last_price,
+                        deep_size_mult=deep_size_mult,
+                        sim_dt=sim_dt_for_queue,
+                    )
+                    deep_note += " | queued:bounce_support"
+            except Exception as exc:
+                log.debug("[backtest-queue] %s support queue add failed: %s", symbol, exc)
+
     return {
         "symbol": symbol,
         "action": action,
@@ -1031,7 +1149,7 @@ def _decide(
             "short": trend.get("short", {}).get("label"),
             "long": trend.get("long", {}).get("label"),
         },
-        "regime": {"label": regime.get("label"), "score": regime.get("score")},
+        "regime": {"label": regime.get("label") or "neutral", "score": regime.get("score")},
         "quality": quality,
         "gap_up": gap_up,
         "signals": {"technicals": tech, "news": news,
@@ -1046,19 +1164,26 @@ def _execute_buy(broker: BacktestBroker, sym: str, dec: dict, account, t_cfg: di
     from ..broker.base import Order, OrderSide
 
     q = broker.get_quote(sym)
+    try:
+        price = float(getattr(q, "last", 0.0))
+    except (TypeError, ValueError):
+        price = 0.0
+    if not math.isfinite(price) or price <= 0:
+        log.warning(f"[backtest] {sym}: BUY skipped - invalid quote price")
+        return None
     min_price = float(t_cfg.get("min_price_for_buy", 0.0))
-    if min_price > 0 and q.last < min_price:
+    if min_price > 0 and price < min_price:
         log.info(
             f"[backtest] {sym}: BUY skipped — price ${q.last:.2f} below "
             f"min_price_for_buy ${min_price:.2f}"
         )
         return None
-    stop_info = compute_dynamic_stop(broker, sym, q.last)
-    tp_price = compute_take_profit(q.last)
+    stop_info = compute_dynamic_stop(broker, sym, price)
+    tp_price = compute_take_profit(price)
 
     trend_d = dec.get("trend") or {}
     qty, _size_info = compute_size(
-        account, q.last,
+        account, price,
         trend={
             "label": trend_d.get("label"),
             "short": {"label": trend_d.get("short")},
@@ -1086,12 +1211,11 @@ def _execute_buy(broker: BacktestBroker, sym: str, dec: dict, account, t_cfg: di
         _ts_cfg = t_cfg.get("trailing_stop", {}) or {}
         is_small_cap = entry_price <= float(_ts_cfg.get("small_cap_price_threshold", 15.0))
         is_gap_up = dec.get("gap_up", False)
-        is_trailing = is_small_cap or is_gap_up
-        trail_pct = (
-            (entry_price - stop_price) / entry_price
-            if (is_trailing and stop_price > 0 and entry_price > 0)
-            else float(t_cfg.get("large_cap_trail_pct", 0.10))
-        )
+        is_trailing = (
+            bool(_ts_cfg.get("enabled_for_small_caps", True)) if is_small_cap
+            else bool(_ts_cfg.get("enabled_for_large_caps", False))
+        ) or bool(is_gap_up)
+        trail_pct = float(_ts_cfg.get("large_cap_trail_pct", 0.10))
         broker.set_position_stop(
             sym,
             stop_loss=stop_price or None,
@@ -1112,6 +1236,195 @@ def _execute_buy(broker: BacktestBroker, sym: str, dec: dict, account, t_cfg: di
             },
         )
     return placed
+
+
+def _run_entry_queue_monitor(
+    *,
+    broker: BacktestBroker,
+    bt_queue: BacktestEntryQueue,
+    start_dt: datetime,
+    end_dt: datetime,
+    breadth: dict,
+    regime: dict,
+    newsapi_key: str,
+    weights: dict,
+    t_cfg: dict,
+    queue_cfg: dict,
+    use_llm: bool,
+    cycle_log: list[dict],
+    decisions_log: list[dict],
+    sim_date: date,
+    news_cache: dict | None,
+    fingerprints_file: str,
+) -> None:
+    """Replay the live queue monitor between scheduled decision cycles.
+
+    The market cache has 15-minute bars, so checking faster than that would
+    just re-read the same candle. The default interval is therefore 15 minutes.
+    """
+    if not bt_queue.enabled or not bt_queue.entries:
+        return
+
+    from ..trading.decision_engine import _resolve_max_positions
+
+    interval = int(queue_cfg.get("backtest_monitor_interval_minutes", 15))
+    interval = max(5, interval)
+    check_dt = start_dt + timedelta(minutes=interval)
+
+    while check_dt < end_dt:
+        broker.set_sim_dt(check_dt)
+        max_pos = _resolve_max_positions(t_cfg, regime.get("label") or "neutral")
+
+        def _execute(symbol: str, tags: dict, score: float, signals: dict):
+            account = broker.get_account()
+            held = {p.symbol: p for p in account.positions}
+            current_open = sum(1 for p in account.positions if p.quantity != 0)
+            if symbol in held:
+                log.info("[backtest-queue] %s already held at %s - queued buy skipped", symbol, check_dt)
+                return None
+            if current_open >= max_pos:
+                log.info(
+                    "[backtest-queue] %s max_positions reached at %s (%s/%s)",
+                    symbol,
+                    check_dt,
+                    current_open,
+                    max_pos,
+                )
+                return None
+
+            dec = {
+                "symbol": symbol,
+                "action": "BUY",
+                "combined_score": round(float(score), 3),
+                "deep_size_mult": float(tags.get("deep_size_mult", 1.0) or 1.0),
+                "reason": (
+                    f"queue-trigger:{tags.get('entry_type', 'entry')} "
+                    f"@ {float(tags.get('trigger_price', 0) or 0):.2f}"
+                ),
+                "trend": {"label": "unknown", "short": None, "long": None},
+                "regime": {"label": regime.get("label") or "neutral", "score": regime.get("score")},
+                "quality": {"label": "queued", "score": None, "reason": "backtest entry queue"},
+                "signals": signals,
+                "gap_up": False,
+            }
+            placed = _execute_buy(broker, symbol, dec, account, t_cfg)
+            if placed and placed.status == "filled":
+                cycle = f"Q{check_dt.strftime('%H:%M')}"
+                cycle_log.append({
+                    "date": str(sim_date),
+                    "cycle": cycle,
+                    "symbol": symbol,
+                    "action": "BUY",
+                    "qty": placed.quantity,
+                    "price": placed.filled_price,
+                    "combined": dec.get("combined_score"),
+                    "entry_type": tags.get("entry_type"),
+                    "reason": dec["reason"],
+                })
+                _append_queue_decision_log(
+                    decisions_log=decisions_log,
+                    broker=broker,
+                    sim_date=sim_date,
+                    cycle=cycle,
+                    symbol=symbol,
+                    dec=dec,
+                    placed=placed,
+                    buy_threshold=float(t_cfg.get("buy_threshold", 0.35)),
+                    queue_tags=tags,
+                )
+                try:
+                    from ..learning.setup_memory import record_entry_fingerprint
+                    record_entry_fingerprint(
+                        symbol,
+                        cycle,
+                        dec,
+                        placed.filled_price,
+                        as_of_date=sim_date,
+                        db_file=fingerprints_file,
+                    )
+                except Exception as exc:
+                    log.debug("[backtest-queue] fingerprint entry %s failed: %s", symbol, exc)
+            return placed
+
+        bt_queue.check_and_fire(
+            broker=broker,
+            sim_dt=check_dt,
+            breadth=breadth,
+            regime=regime,
+            newsapi_key=newsapi_key,
+            weights=weights,
+            buy_threshold=float(t_cfg.get("buy_threshold", 0.35)),
+            use_llm=use_llm,
+            execute_fn=_execute,
+            news_cache=news_cache,
+        )
+        check_dt += timedelta(minutes=interval)
+
+
+def _append_queue_decision_log(
+    *,
+    decisions_log: list[dict],
+    broker: BacktestBroker,
+    sim_date: date,
+    cycle: str,
+    symbol: str,
+    dec: dict,
+    placed,
+    buy_threshold: float,
+    queue_tags: dict,
+) -> None:
+    signals = dec.get("signals") or {}
+    tech = signals.get("technicals") or {}
+    details = tech.get("details") or {}
+    news = signals.get("news") or {}
+    breadth = signals.get("breadth") or {}
+    llm = signals.get("llm") or {}
+    try:
+        current_price = broker.get_quote(symbol).last
+    except Exception:
+        current_price = None
+    decisions_log.append({
+        "date": str(sim_date),
+        "cycle": cycle,
+        "symbol": symbol,
+        "action": "BUY",
+        "combined": dec.get("combined_score"),
+        "buy_threshold": buy_threshold,
+        "tech_score": round(float(tech.get("score", 0)), 4),
+        "news_score": round(float(news.get("score", 0)), 4),
+        "breadth_score": round(float(breadth.get("score", 0)), 4),
+        "llm_score": round(float(llm.get("score", 0)), 4),
+        "rsi": details.get("rsi"),
+        "rsi_score": details.get("rsi_score"),
+        "macd_hist": details.get("macd_hist"),
+        "macd_score": details.get("macd_score"),
+        "adx": details.get("adx"),
+        "trend_score": details.get("trend_score"),
+        "bb_pct_b": details.get("bb_pct_b"),
+        "bb_score": details.get("bb_score"),
+        "bb_squeeze": details.get("bb_squeeze"),
+        "obv_score": details.get("obv_score"),
+        "vwap_score": details.get("vwap_score"),
+        "vwap_distance_pct": details.get("vwap_distance_pct"),
+        "fib_score": details.get("fib_score"),
+        "fib_ratio": details.get("fib_nearest_ratio"),
+        "fib_proximity_pct": details.get("fib_proximity_pct"),
+        "fib_direction": details.get("fib_direction"),
+        "regime": (dec.get("regime") or {}).get("label"),
+        "regime_score": (dec.get("regime") or {}).get("score"),
+        "trend": (dec.get("trend") or {}).get("label"),
+        "breadth_reason": str(breadth.get("reason", ""))[:150],
+        "llm_action": llm.get("action"),
+        "llm_confidence": llm.get("confidence"),
+        "llm_reason": str(llm.get("reason", ""))[:250],
+        "quality": "queued",
+        "gate_notes": f"queue_trigger:{queue_tags.get('entry_type', '')}",
+        "had_position": False,
+        "current_price": round(float(current_price), 4) if current_price else None,
+        "fill_price": placed.filled_price,
+        "qty": placed.quantity,
+        "fwd_5d_return": None,
+    })
 
 
 # ------------------------------------------------------------------ watchlist cull helper
@@ -1182,7 +1495,7 @@ def _cull_symbols(
                 tech = ts(_BProxy(), sym)
                 if tech_cache is not None:
                     tech_cache[_tkey] = tech
-            _nkey = (sym.upper(), str(sim_date))
+            _nkey = _news_cache_key(sym, sim_date)
             if news_cache is not None and _nkey in news_cache:
                 news = news_cache[_nkey]
             else:
@@ -1267,7 +1580,7 @@ def _rank_symbols(
                 if tech_cache is not None:
                     tech_cache[_tkey] = _tech_result
                 tech = _tech_result["score"]
-            _nkey = (sym.upper(), str(sim_date))
+            _nkey = _news_cache_key(sym, sim_date)
             if news_cache is not None and _nkey in news_cache:
                 news = news_cache[_nkey]["score"]
             else:
@@ -1394,30 +1707,7 @@ def main():
         print(f"  ... and {len(syms)-10} more")
     print()
 
-    results = run_backtest(
-        symbols=syms,
-        days=args.days,
-        starting_cash=args.cash,
-        use_deep_scorer=not args.no_deep,
-        use_llm=not args.no_llm,
-        verbose=True,
-        skip_days=args.skip_days,
-        end_date=_end_date,
-    )
-
     out_path = Path(args.out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    _results_slim = {k: v for k, v in results.items() if k != "decisions_log"}
-    out_path.write_text(json.dumps(_results_slim, indent=2, default=str), encoding="utf-8")
-    print(f"\nRaw results saved to {out_path}")
-
-    _dl_path = out_path.parent / "backtest_decisions.jsonl"
-    _dl_rows = results.get("decisions_log", [])
-    with open(_dl_path, "w", encoding="utf-8") as _f:
-        for _row in _dl_rows:
-            _f.write(json.dumps(_row, default=str) + "\n")
-    print(f"Decisions log saved to {_dl_path}  ({len(_dl_rows)} rows)")
-
     _label = "full" if (not args.no_llm and not args.no_deep) else (
         "no-llm-deep" if (args.no_llm and args.no_deep) else
         "no-llm" if args.no_llm else "no-deep"
@@ -1433,6 +1723,30 @@ def main():
                 _next_num = int(_m.group(1)) + 1
                 break
     _archive_path = _archive_dir / f"backtest_results_{_label}{_next_num:03d}.json"
+
+    results = run_backtest(
+        symbols=syms,
+        days=args.days,
+        starting_cash=args.cash,
+        use_deep_scorer=not args.no_deep,
+        use_llm=not args.no_llm,
+        verbose=True,
+        skip_days=args.skip_days,
+        end_date=_end_date,
+        run_id=_archive_path.stem,
+    )
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(results, indent=2, default=str), encoding="utf-8")
+    print(f"\nRaw results saved to {out_path}")
+
+    _dl_path = out_path.parent / "backtest_decisions.jsonl"
+    _dl_rows = results.get("decisions_log", [])
+    with open(_dl_path, "w", encoding="utf-8") as _f:
+        for _row in _dl_rows:
+            _f.write(json.dumps(_row, default=str) + "\n")
+    print(f"Decisions log saved to {_dl_path}  ({len(_dl_rows)} rows)")
+
     _archive_path.write_text(json.dumps(results, indent=2, default=str), encoding="utf-8")
     print(f"Archive copy saved to  {_archive_path}")
     # Archive backtest run to permanent history + decisions master
@@ -1442,7 +1756,7 @@ def main():
             "run_id": _archive_path.stem,
             "label": _label,
             "days": args.days,
-            "results_file": str(_archive_path),
+            "results_file": _archive_path.as_posix(),
             "flags": (["no-llm"] if args.no_llm else []) + (["no-deep"] if args.no_deep else []),
         }
         archive_backtest_run(results, _run_meta, out_path.parent)

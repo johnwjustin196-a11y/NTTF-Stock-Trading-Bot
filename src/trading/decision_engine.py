@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import time
 from datetime import datetime
+import math
 from typing import Any
 
 from ..analysis import (
@@ -29,6 +30,14 @@ from .position_manager import (
 )
 
 log = get_logger(__name__)
+
+
+def _valid_quote_price(quote) -> float | None:
+    try:
+        price = float(getattr(quote, "last", 0.0))
+    except (TypeError, ValueError):
+        return None
+    return price if math.isfinite(price) and price > 0 else None
 
 
 def run_decision_cycle(broker: Broker, cycle_label: str) -> dict[str, Any]:
@@ -155,7 +164,7 @@ def run_decision_cycle(broker: Broker, cycle_label: str) -> dict[str, Any]:
             "symbol": sym,
             "decision": decision,
             "executed": _order_dict(executed) if executed else None,
-            "regime": {"label": regime["label"], "score": regime.get("score")},
+            "regime": {"label": regime.get("label") or "neutral", "score": regime.get("score")},
         }
         append_entry(entry)
         results.append(entry)
@@ -200,7 +209,7 @@ def run_decision_cycle(broker: Broker, cycle_label: str) -> dict[str, Any]:
         try:
             executed = _execute(broker, decision, held.get(sym), account, max_positions=max_pos)
             _record(sym, decision, executed)
-            if executed and getattr(executed, "status", "") == "filled":
+            if _has_confirmed_entry_fill(executed):
                 # Record setup fingerprint for similarity-based pattern recall
                 try:
                     from ..learning.setup_memory import record_entry_fingerprint
@@ -236,6 +245,16 @@ def run_decision_cycle(broker: Broker, cycle_label: str) -> dict[str, Any]:
 # Mapping used for BUY-queue priority. Exposed as a module constant so the
 # sort helper is easy to test in isolation.
 QUALITY_RANK = {"strong": 3, "normal": 2, "weak": 1, "unknown": 0}
+_CONFIRMED_ENTRY_STATUSES = {"filled", "partially_filled"}
+
+
+def _has_confirmed_entry_fill(order: Order | None) -> bool:
+    return bool(
+        order
+        and str(getattr(order, "status", "")).lower() in _CONFIRMED_ENTRY_STATUSES
+        and getattr(order, "filled_price", None) is not None
+        and float(getattr(order, "quantity", 0) or 0) > 0
+    )
 
 
 def sort_buys_by_quality(buys: list[tuple[str, dict]]) -> list[tuple[str, dict]]:
@@ -275,7 +294,7 @@ def decide_for_ticker(
             "gap_up": False,
             "reason": "cooldown: 3+ stops in 15 days",
             "trend": {"label": None, "short": None, "long": None},
-            "regime": {"label": regime.get("label"), "score": regime.get("score")},
+                        "regime": {"label": regime.get("label") or "neutral", "score": regime.get("score")},
             "quality": {"label": "unknown"},
             "signals": {},
         }
@@ -310,7 +329,11 @@ def decide_for_ticker(
             log.debug(f"{symbol}: quote/stop check failed: {e}")
 
     # 2. Gather per-ticker signals
-    tech = technical_signal(broker, symbol, regime=str(regime.get("label", "")) if isinstance(regime, dict) else None)
+    tech = technical_signal(
+        broker,
+        symbol,
+        regime=str(regime.get("label") or "neutral") if isinstance(regime, dict) else None,
+    )
     news = news_signal(symbol)
     trend = trend_classification(symbol)
     # Partial snapshot passed to advisor so it can query the setup fingerprint DB
@@ -326,28 +349,8 @@ def decide_for_ticker(
         decision_snapshot=_partial_snap,
     )
 
-    # Change #34: hard-block all downtrend entries
     _trend_label = str(trend.get("label", "")).lower()
-    if "downtrend" in _trend_label:
-        return {
-            "symbol": symbol,
-            "action": "HOLD",
-            "combined_score": 0.0,
-            "deep_size_mult": 1.0,
-            "gap_up": False,
-            "reason": "blocked: downtrend entry",
-            "trend": {"label": trend.get("label"),
-                      "short": trend.get("short", {}).get("label"),
-                      "long": trend.get("long", {}).get("label")},
-            "regime": {"label": regime.get("label"), "score": regime.get("score")},
-            "quality": {"label": "unknown"},
-            "signals": {
-                "technicals": tech,
-                "news": news,
-                "breadth": {k: breadth[k] for k in ("score", "reason")},
-                "llm": llm,
-            },
-        }
+    downtrend_entry_blocked = (not position) and ("downtrend" in _trend_label)
 
     # 3. Weighted combination
     combined = (
@@ -384,12 +387,13 @@ def decide_for_ticker(
         from ..learning.rules import check_promoted_rules
         _snap_for_rules = {
             "action": "BUY",  # check as if we're about to BUY
-            "regime": regime.get("label") if isinstance(regime, dict) else "",
+            "regime": (regime.get("label") or "neutral") if isinstance(regime, dict) else "neutral",
             "trend": trend.get("label") if isinstance(trend, dict) else "",
             "signals": {"technicals": tech.get("score", 0.0), "news": news.get("score", 0.0), "breadth": breadth.get("score", 0.0)},
         }
         promoted_blocks = check_promoted_rules(
-            _snap_for_rules, regime=regime.get("label") if isinstance(regime, dict) else None
+            _snap_for_rules,
+            regime=(regime.get("label") or "neutral") if isinstance(regime, dict) else None,
         )
     except Exception as _pre:
         log.debug(f"{symbol}: promoted rule check failed: {_pre}")
@@ -481,6 +485,13 @@ def decide_for_ticker(
         trend=trend, regime=regime,
     )
 
+    # Change #34: hard-block new downtrend entries, but still let held
+    # positions continue through close/review/urgent-news logic.
+    if action == "BUY" and downtrend_entry_blocked:
+        action = "HOLD"
+        _gate_blocks.append("downtrend_entry_blocked")
+        extra_notes.append("blocked: downtrend entry")
+
     # Change #24: hard-block weak quality in any downtrend-adjacent condition
     if action == "BUY" and quality.get("label") == "weak" and "downtrend" in _trend_label:
         action = "HOLD"
@@ -496,7 +507,7 @@ def decide_for_ticker(
     # 6. Adverse-regime quality gate: if the tape is bearish/volatile and the
     #    best we can tag this trade is "weak", don't take it. Strong/normal
     #    still go through (but will be sized smaller by compute_size).
-    regime_label = str(regime.get("label", "")).lower()
+    regime_label = str(regime.get("label") or "neutral").lower()
     adverse = set(str(x).lower() for x in t.get("adverse_regimes", ["bearish", "volatile"]))
     filter_note = None
     if (action == "BUY"
@@ -583,7 +594,16 @@ def decide_for_ticker(
 
     # Change #40: Fibonacci proximity gate - re-route to queue if at fib resistance
     _fib_dir = tech.get("details", {}).get("fib_direction", "")
-    _fib_prox = tech.get("details", {}).get("fib_proximity", 1.0)
+    _fib_d_for_prox = tech.get("details", {}) or {}
+    _fib_prox_pct = _fib_d_for_prox.get("fib_proximity_pct")
+    try:
+        _fib_prox = (
+            float(_fib_prox_pct) / 100.0
+            if _fib_prox_pct is not None
+            else float(_fib_d_for_prox.get("fib_proximity", 1.0))
+        )
+    except Exception:
+        _fib_prox = 1.0
     if action == "BUY" and str(_fib_dir).lower() == "resistance" and _fib_prox < 0.03:
         action = "HOLD"
         reason_fib = "fib resistance within 3pct - routed to queue"
@@ -605,6 +625,7 @@ def decide_for_ticker(
                         fib_direction="resistance",
                         combined_score=combined,
                         price_at_queue=_last_40,
+                        deep_size_mult=deep_size_mult,
                     )
                     extra_notes.append(
                         f"QUEUED: waiting for breakout @ {fib_price_40:.2f} "
@@ -659,7 +680,7 @@ def decide_for_ticker(
 
     # 10a. LLM CLOSE veto on queued entries — cancel without open position
     if llm_action == "CLOSE" and not position and entry_queue.has_entry(symbol):
-        entry_queue.remove_entry(symbol)
+        entry_queue.remove_entry(symbol, reason="llm_close_cancel")
         extra_notes.append("LLM CLOSE cancelled queued entry")
         log.info(f"{symbol}: LLM CLOSE cancelled queued entry")
 
@@ -694,6 +715,7 @@ def decide_for_ticker(
                         fib_direction="support",
                         combined_score=combined,
                         price_at_queue=last_price,
+                        deep_size_mult=deep_size_mult,
                     )
                     extra_notes.append(
                         f"QUEUED: waiting for bounce @ {fib_price:.2f} "
@@ -707,7 +729,7 @@ def decide_for_ticker(
         f"tech={tech['score']:+.2f}, news={news['score']:+.2f}, "
         f"breadth={breadth['score']:+.2f}, llm={llm['score']:+.2f} -> {combined:+.2f}",
         f"trend={trend.get('label','?')}",
-        f"regime={regime.get('label','?')}",
+        f"regime={regime.get('label') or 'neutral'}",
         f"quality={quality['label']}",
     ]
     if filter_note:
@@ -735,7 +757,7 @@ def decide_for_ticker(
         "trend": {"label": trend.get("label"),
                   "short": trend.get("short", {}).get("label"),
                   "long": trend.get("long", {}).get("label")},
-        "regime": {"label": regime.get("label"), "score": regime.get("score")},
+        "regime": {"label": regime.get("label") or "neutral", "score": regime.get("score")},
         "quality": quality,
         "signals": {
             "technicals": tech,
@@ -952,9 +974,13 @@ def _execute(broker: Broker, decision: dict, position, account,
             return None
 
         q = broker.get_quote(sym)
+        price = _valid_quote_price(q)
+        if price is None:
+            log.warning(f"{sym}: BUY skipped - invalid quote price")
+            return None
         min_price = float(cfg.get("min_price_for_buy", 0.0))
-        if min_price > 0 and q.last < min_price:
-            log.info(f"{sym}: BUY skipped — price ${q.last:.2f} below min_price_for_buy ${min_price:.2f}")
+        if min_price > 0 and price < min_price:
+            log.info(f"{sym}: BUY skipped - price ${price:.2f} below min_price_for_buy ${min_price:.2f}")
             return None
         trend = decision.get("trend") or {}
         # compute_size needs the full trend object to decide downtrend haircut.
@@ -967,14 +993,14 @@ def _execute(broker: Broker, decision: dict, position, account,
         }
 
         # Compute the stop FIRST so we can feed its distance into sizing.
-        stop_info = compute_dynamic_stop(broker, sym, q.last)
-        tp_price = compute_take_profit(q.last)
+        stop_info = compute_dynamic_stop(broker, sym, price)
+        tp_price = compute_take_profit(price)
 
         # Risk-aware + regime-aware sizing: wider stop -> smaller position;
         # bearish/volatile regime -> smaller position again.
         # deep_size_mult further scales down D/C-grade stocks.
         qty, size_details = compute_size(
-            account, q.last,
+            account, price,
             trend=trend_full,
             stop_price=stop_info.get("stop"),
             regime=decision.get("regime") or {},
@@ -996,8 +1022,9 @@ def _execute(broker: Broker, decision: dict, position, account,
         placed = broker.place_order(order)
 
         # Persist per-position risk metadata so the next cycle's stop check sees it
-        if placed and placed.status == "filled":
-            entry_px = placed.filled_price or q.last
+        if _has_confirmed_entry_fill(placed):
+            entry_px = placed.filled_price or price
+            filled_qty = float(placed.quantity or qty)
             # Small-cap detection + trailing-stop tagging
             ts_cfg = cfg.get("trailing_stop", {}) or {}
             sc_threshold = float(ts_cfg.get("small_cap_price_threshold", 15.0))
@@ -1016,6 +1043,7 @@ def _execute(broker: Broker, decision: dict, position, account,
             else:
                 # Large caps (non-gap): flat configurable trailing stop (default 10%)
                 trail_pct = float(ts_cfg.get("large_cap_trail_pct", 0.10))
+            stop_synced = False
             try:
                 tags = {
                     "quality": decision.get("quality", {}).get("label", "normal"),
@@ -1037,19 +1065,23 @@ def _execute(broker: Broker, decision: dict, position, account,
                     take_profit=tp_price,
                     tags=tags,
                 )
+                stop_synced = True
             except Exception as e:
-                log.debug(f"{sym}: set_position_stop failed: {e}")
+                log.warning(f"{sym}: live stop placement failed after BUY; position may be unprotected: {e}")
 
             # $ at risk = (entry - stop) * qty — useful to print & journal
-            dollar_risk = (entry_px - stop_info["stop"]) * qty
+            dollar_risk = (entry_px - stop_info["stop"]) * filled_qty
             trail_note = (
                 f", trailing {trail_pct:.2%}"
                 if (trailing_enabled and trail_pct is not None) else ""
             )
+            stop_status = (
+                "live" if getattr(broker, "broker_managed_stops", False) else "stored"
+            ) if stop_synced else "UNPROTECTED"
             log.info(
-                f"{sym}: BUY {qty} @ {entry_px:.2f} | "
+                f"{sym}: BUY {filled_qty:g} @ {entry_px:.2f} | "
                 f"stop={stop_info['stop']:.2f} ({stop_info['source']}, "
-                f"{stop_info.get('pct',0):.2%}{trail_note}) | "
+                f"{stop_info.get('pct',0):.2%}{trail_note}, {stop_status}) | "
                 f"tp={tp_price:.2f} | quality={decision.get('quality',{}).get('label')} | "
                 f"sizing={size_details.get('sizing_mode')} "
                 f"(binding={size_details.get('binding_constraint')}) | "
@@ -1060,7 +1092,7 @@ def _execute(broker: Broker, decision: dict, position, account,
     return None
 
 
-def _place_queued_buy(broker: Broker, symbol: str, tags: dict) -> None:
+def _place_queued_buy(broker: Broker, symbol: str, tags: dict) -> Order | None:
     """Execute a BUY for a queue-triggered entry.
 
     Called by the 5-minute monitor after bounce/breakout confirmation and
@@ -1075,21 +1107,31 @@ def _place_queued_buy(broker: Broker, symbol: str, tags: dict) -> None:
         if sym in positions:
             log.info(f"[entry_queue] {sym}: already have position — skipping queued buy")
             return
-        max_pos = int(cfg.get("max_positions", 15))
+        regime_label = (
+            str(tags.get("regime") or tags.get("entry_regime") or "neutral").lower()
+        )
+        max_pos = _resolve_max_positions(cfg, regime_label)
         current_open = sum(1 for p in account.positions if p.quantity != 0)
         if current_open >= max_pos:
             log.info(f"[entry_queue] {sym}: at max_positions ({current_open}) — skipping")
             return
 
         q = broker.get_quote(sym)
-        stop_info = compute_dynamic_stop(broker, sym, q.last)
-        tp_price  = compute_take_profit(q.last)
+        price = _valid_quote_price(q)
+        if price is None:
+            log.warning(f"[entry_queue] {sym}: invalid quote price - skipping queued buy")
+            return
+        stop_info = compute_dynamic_stop(broker, sym, price)
+        tp_price  = compute_take_profit(price)
         qty, size_details = compute_size(
-            account, q.last,
+            account, price,
             trend={"label": "unknown", "short": {"label": None}, "long": {"label": None}},
             stop_price=stop_info.get("stop"),
             regime={},
         )
+        deep_mult = float(tags.get("deep_size_mult", 1.0) or 1.0)
+        if deep_mult < 1.0 and qty > 0:
+            qty = max(1, math.floor(qty * deep_mult))
         if qty <= 0:
             log.info(f"[entry_queue] {sym}: computed size 0 — skipping")
             return
@@ -1101,8 +1143,9 @@ def _place_queued_buy(broker: Broker, symbol: str, tags: dict) -> None:
             notes=f"queue-trigger: {tags.get('entry_type','bounce')} @ {tags.get('trigger_price',0):.2f}",
         )
         placed = broker.place_order(order)
-        if placed and placed.status == "filled":
-            entry_px = placed.filled_price or q.last
+        if _has_confirmed_entry_fill(placed):
+            entry_px = placed.filled_price or price
+            filled_qty = float(placed.quantity or qty)
             ts_cfg   = cfg.get("trailing_stop", {}) or {}
             trail_pct = float(ts_cfg.get("large_cap_trail_pct", 0.10))
             full_tags = {
@@ -1118,12 +1161,14 @@ def _place_queued_buy(broker: Broker, symbol: str, tags: dict) -> None:
                 sym, stop_loss=stop_info["stop"], take_profit=tp_price, tags=full_tags
             )
             log.info(
-                f"[entry_queue] {sym}: BUY {qty} @ {entry_px:.2f} "
+                f"[entry_queue] {sym}: BUY {filled_qty:g} @ {entry_px:.2f} "
                 f"(queued trigger: {tags.get('entry_type')}, "
                 f"fib {tags.get('fib_ratio', 0)*100:.1f}%)"
             )
+        return placed
     except Exception as e:
         log.warning(f"[entry_queue] _place_queued_buy {sym}: {e}")
+    return None
 
 
 def _log_signal_disagreement(

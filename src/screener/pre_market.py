@@ -218,23 +218,37 @@ def _passes_filters(symbol: str, filters: dict[str, Any]) -> bool:
                 return False
             if "max_market_cap" in filters and mcap > filters["max_market_cap"]:
                 return False
-        if price is not None and price < 15.0:
-            return False
         try:
-            import pandas_ta as _pta
-            _hist = yf.Ticker(symbol).history(period="1mo", auto_adjust=True)
-            if _hist is not None and len(_hist) >= 14:
-                _atr_s = _pta.atr(_hist["High"], _hist["Low"], _hist["Close"], length=14)
-                if _atr_s is not None and len(_atr_s) > 0 and not _atr_s.isna().iloc[-1]:
-                    _atr_val = float(_atr_s.iloc[-1])
-                    if price and _atr_val / price > 0.04:
-                        return False
-        except Exception:
-            pass
+            hist = yf.Ticker(symbol).history(period="1mo", auto_adjust=True)
+            atr_val = _latest_atr(hist, length=14)
+            if atr_val is not None and price and atr_val / price > 0.04:
+                return False
+        except Exception as e:
+            log.debug(f"ATR volatility filter {symbol} failed: {e}")
         return True
     except Exception as e:
         log.debug(f"filter {symbol} failed: {e}")
         return False
+
+
+def _latest_atr(hist, length: int = 14) -> float | None:
+    """Compute latest ATR without the optional pandas_ta dependency."""
+    if hist is None or len(hist) < length:
+        return None
+    required = {"High", "Low", "Close"}
+    if not required.issubset(set(hist.columns)):
+        return None
+    high = hist["High"].astype(float)
+    low = hist["Low"].astype(float)
+    close = hist["Close"].astype(float)
+    prev_close = close.shift(1)
+    tr = (high - low).to_frame("hl")
+    tr["hc"] = (high - prev_close).abs()
+    tr["lc"] = (low - prev_close).abs()
+    atr = tr.max(axis=1).rolling(length).mean()
+    if atr.empty or atr.isna().iloc[-1]:
+        return None
+    return float(atr.iloc[-1])
 
 
 def _pull_small_cap_movers(pull_each: int = 30) -> list[str]:

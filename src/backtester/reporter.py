@@ -17,6 +17,8 @@ from __future__ import annotations
 import statistics
 from math import isfinite
 
+from ..utils.config import load_config
+
 
 def generate_report(results: dict) -> str:
     """Return a formatted plaintext performance report."""
@@ -66,18 +68,19 @@ def generate_report(results: dict) -> str:
     ]
 
     # -------------------------------------------------------------- trade stats
-    wins = [t for t in trades if t.get("pnl", 0) > 0]
-    losses = [t for t in trades if t.get("pnl", 0) <= 0]
-    win_rate = len(wins) / len(trades) if trades else 0.0
-    avg_win = statistics.mean(t["pnl"] for t in wins) if wins else 0.0
-    avg_loss = statistics.mean(t["pnl"] for t in losses) if losses else 0.0
-    gross_win = sum(t["pnl"] for t in wins)
-    gross_loss = abs(sum(t["pnl"] for t in losses))
+    scored_trades = [t for t in trades if _safe_pnl(t) is not None]
+    wins = [t for t in scored_trades if (_safe_pnl(t) or 0.0) > 0]
+    losses = [t for t in scored_trades if (_safe_pnl(t) or 0.0) <= 0]
+    win_rate = len(wins) / len(scored_trades) if scored_trades else 0.0
+    avg_win = statistics.mean(_safe_pnl(t) or 0.0 for t in wins) if wins else 0.0
+    avg_loss = statistics.mean(_safe_pnl(t) or 0.0 for t in losses) if losses else 0.0
+    gross_win = sum(_safe_pnl(t) or 0.0 for t in wins)
+    gross_loss = abs(sum(_safe_pnl(t) or 0.0 for t in losses))
     profit_factor = gross_win / gross_loss if gross_loss > 0 else float("inf")
 
     lines += [
         "--- TRADES ---",
-        f"  Total trades:     {len(trades):>12}",
+        f"  Total trades:     {len(scored_trades):>12}",
         f"  Wins / Losses:    {len(wins):>5} / {len(losses):<5}",
         f"  Win rate:         {win_rate:>12.2%}",
         f"  Avg win:          ${avg_win:>+11,.2f}",
@@ -89,19 +92,19 @@ def generate_report(results: dict) -> str:
     ]
 
     # -------------------------------------------------------------- best / worst
-    if trades:
-        by_pnl = sorted(trades, key=lambda t: t.get("pnl", 0), reverse=True)
+    if scored_trades:
+        by_pnl = sorted(scored_trades, key=lambda t: _safe_pnl(t) or 0.0, reverse=True)
         lines.append("--- BEST TRADES ---")
         for t in by_pnl[:5]:
             lines.append(
-                f"  {t['symbol']:<8} ${t['pnl']:>+8,.2f}  ({t.get('pnl_pct', 0):+.1%})  "
+                f"  {t['symbol']:<8} ${(_safe_pnl(t) or 0.0):>+8,.2f}  ({t.get('pnl_pct', 0):+.1%})  "
                 f"{t.get('closed_at', '')}  {t.get('reason', '')[:35]}"
             )
         lines.append("")
         lines.append("--- WORST TRADES ---")
         for t in by_pnl[-5:]:
             lines.append(
-                f"  {t['symbol']:<8} ${t['pnl']:>+8,.2f}  ({t.get('pnl_pct', 0):+.1%})  "
+                f"  {t['symbol']:<8} ${(_safe_pnl(t) or 0.0):>+8,.2f}  ({t.get('pnl_pct', 0):+.1%})  "
                 f"{t.get('closed_at', '')}  {t.get('reason', '')[:35]}"
             )
         lines.append("")
@@ -162,13 +165,14 @@ def generate_report(results: dict) -> str:
 
     # -------------------------------------------------------------- by symbol
     by_sym: dict[str, dict] = {}
-    for t in trades:
+    for t in scored_trades:
         sym = t["symbol"]
         if sym not in by_sym:
             by_sym[sym] = {"n": 0, "pnl": 0.0, "wins": 0}
         by_sym[sym]["n"] += 1
-        by_sym[sym]["pnl"] += t.get("pnl", 0.0)
-        if t.get("pnl", 0.0) > 0:
+        pnl = _safe_pnl(t) or 0.0
+        by_sym[sym]["pnl"] += pnl
+        if pnl > 0:
             by_sym[sym]["wins"] += 1
 
     if by_sym:
@@ -186,10 +190,11 @@ def generate_report(results: dict) -> str:
     entry_sig_trades = [t for t in trades if "entry_tech" in t]
     if entry_sig_trades:
         def _perf(subset: list) -> str:
+            subset = [t for t in subset if _safe_pnl(t) is not None]
             if not subset:
                 return f"{'':>4}  0 trades"
-            wins = sum(1 for t in subset if t.get("pnl", 0) > 0)
-            avg_p = sum(t.get("pnl", 0) for t in subset) / len(subset)
+            wins = sum(1 for t in subset if (_safe_pnl(t) or 0.0) > 0)
+            avg_p = sum(_safe_pnl(t) or 0.0 for t in subset) / len(subset)
             return f"  {len(subset):>3} trades  {wins/len(subset):5.0%} win  avg ${avg_p:>+7.0f}"
 
         lines += [
@@ -280,10 +285,10 @@ def generate_report(results: dict) -> str:
         # each BUY decision to the first trade that closed on or after the decision date.
         # One position per symbol at a time means the first trade closing >= entry date is the right one.
         _sym_trades: dict[str, list] = {}
-        for t in trades:
+        for t in scored_trades:
             sym = t["symbol"]
             _sym_trades.setdefault(sym, []).append(
-                (str(t.get("closed_at", ""))[:10], float(t.get("pnl", 0)))
+                (str(t.get("closed_at", ""))[:10], _safe_pnl(t) or 0.0)
             )
         for sym in _sym_trades:
             _sym_trades[sym].sort()  # sort by closed_at ascending
@@ -478,15 +483,37 @@ def _daily_returns(equity_curve: list[dict], starting_cash: float) -> list[float
     return rets
 
 
+def _safe_pnl(trade: dict) -> float | None:
+    try:
+        pnl = float(trade.get("pnl"))
+    except (TypeError, ValueError):
+        return None
+    return pnl if isfinite(pnl) else None
+
+
+def _risk_free_rate() -> float:
+    try:
+        cfg = load_config()
+        return float(
+            cfg.get("dashboard", {}).get("risk_free_rate")
+            or cfg.get("backtest", {}).get("risk_free_rate")
+            or 0.04
+        )
+    except Exception:
+        return 0.04
+
+
 def _sharpe(daily_returns: list[float]) -> float:
     if len(daily_returns) < 2:
         return 0.0
     try:
-        mean = statistics.mean(daily_returns)
+        rf_daily = _risk_free_rate() / 252.0
+        excess_returns = [r - rf_daily for r in daily_returns]
+        mean = statistics.mean(excess_returns)
         std = statistics.stdev(daily_returns)
         if std <= 0:
             return 0.0
-        ann = mean / std * (252 ** 0.5)
+        ann = mean / std * (len(excess_returns) ** 0.5)
         return ann if isfinite(ann) else 0.0
     except Exception:
         return 0.0

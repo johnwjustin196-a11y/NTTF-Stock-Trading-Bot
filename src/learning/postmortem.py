@@ -38,6 +38,8 @@ def run_trade_postmortem(
     postmortems_file: str | None = None,
     lessons_file: str | None = None,
     use_llm: bool = True,
+    run_id: str | None = None,
+    stop_verdict: str | None = None,
 ) -> str:
     """Fire a post-mortem for a just-closed trade. Always safe to call.
 
@@ -56,6 +58,8 @@ def run_trade_postmortem(
             postmortems_file=postmortems_file,
             lessons_file=lessons_file,
             use_llm=use_llm,
+            run_id=run_id,
+            stop_verdict=stop_verdict,
         )
     except Exception as e:
         log.warning(f"[postmortem] {symbol}: {e}")
@@ -69,7 +73,7 @@ def load_today_postmortems() -> list[dict]:
         return []
     today = today_str()
     out: list[dict] = []
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8-sig") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -95,6 +99,8 @@ def _do_postmortem(
     postmortems_file: str | None = None,
     lessons_file: str | None = None,
     use_llm: bool = True,
+    run_id: str | None = None,
+    stop_verdict: str | None = None,
 ) -> str:
     cfg = load_config()
     tags = getattr(position, "tags", {}) or {}
@@ -176,6 +182,7 @@ def _do_postmortem(
     pm_path = Path(postmortems_file if postmortems_file else _POSTMORTEMS_FILE)
     pm_path.parent.mkdir(parents=True, exist_ok=True)
     row: dict[str, Any] = {
+        "run_id": run_id or "",
         "date": date_str,
         "symbol": symbol,
         "entry": round(entry_price, 4),
@@ -184,6 +191,7 @@ def _do_postmortem(
         "pnl_dollar": round(pnl_dollar, 2),
         "hold_duration": hold_duration,
         "close_reason": close_reason[:200],
+        "stop_verdict": stop_verdict or _infer_stop_verdict(close_reason, pnl_pct),
         "lesson": lesson,
         "tags": tags_list,
         "sentiment": sentiment,
@@ -206,3 +214,16 @@ def _hold_duration(entry_dt_str: str) -> str:
         return f"{mins}m"
     except Exception:
         return ""
+
+
+def _infer_stop_verdict(close_reason: str, pnl_pct: float) -> str:
+    reason = str(close_reason or "").lower()
+    if "locked_profit_stop" in reason:
+        return "locked_profit"
+    if "stop" not in reason:
+        return ""
+    if pnl_pct > 0.005:
+        return "profit_stop"
+    if pnl_pct < -0.005:
+        return "loss_stop"
+    return "flat_stop"

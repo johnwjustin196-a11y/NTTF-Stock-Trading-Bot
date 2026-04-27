@@ -831,11 +831,21 @@ def _llm_score(prompt: str, max_tokens: int = 500, system: str | None = None) ->
 # ---------------------------------------------------------------------------
 
 def _composite(breakdown: dict[str, dict]) -> tuple[float, str, str]:
-    score = sum(
-        _WEIGHTS[dim] * breakdown[dim]["score"]
-        for dim in _WEIGHTS
-        if dim in breakdown
-    )
+    weighted = 0.0
+    total_w = 0.0
+    for dim, weight in _WEIGHTS.items():
+        if dim not in breakdown:
+            continue
+        try:
+            dim_score = float(breakdown[dim]["score"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if not pd.notna(dim_score):
+            continue
+        weighted += weight * dim_score
+        total_w += weight
+    score = weighted / total_w if total_w > 0 else 50.0
+    score = max(0.0, min(100.0, score))
     score = round(score, 1)
     letter, signal = _grade(score)
     return score, letter, signal

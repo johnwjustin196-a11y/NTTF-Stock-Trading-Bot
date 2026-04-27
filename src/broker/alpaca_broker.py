@@ -83,8 +83,21 @@ class AlpacaBroker(Broker):
 
     def _save_state(self) -> None:
         self._state_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(self._state_path, "w") as f:
-            json.dump(self._state, f, indent=2, default=str)
+        tmp_path = self._state_path.with_name(
+            f".{self._state_path.name}.{uuid.uuid4().hex}.tmp"
+        )
+        try:
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(self._state, f, indent=2, default=str)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, self._state_path)
+        finally:
+            try:
+                if tmp_path.exists():
+                    tmp_path.unlink()
+            except Exception:
+                pass
 
     # ------------------------------------------------------------------ HTTP
 
@@ -295,8 +308,27 @@ class AlpacaBroker(Broker):
             except Exception as e:
                 log.debug(f"[alpaca] open-order lookup for {sym}: {e}")
 
+    @staticmethod
+    def _float_or_none(value) -> float | None:
+        try:
+            if value is None or value == "":
+                return None
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    @classmethod
+    def _order_fill_snapshot(cls, data: dict | None) -> tuple[str, float, float | None]:
+        """Return Alpaca status, confirmed filled quantity, and average fill price."""
+        if not isinstance(data, dict):
+            return "unknown", 0.0, None
+        status = str(data.get("status") or "unknown").lower()
+        filled_qty = cls._float_or_none(data.get("filled_qty")) or 0.0
+        fill_price = cls._float_or_none(data.get("filled_avg_price"))
+        return status, filled_qty, fill_price
+
     def _place_stop_order(self, sym: str, stop_price: float,
-                          trail_pct: float | None = None) -> None:
+                          trail_pct: float | None = None) -> bool:
         """Place a GTC stop or trailing-stop order on Alpaca as a safety net.
 
         When trail_pct is given (e.g. 0.10 for 10%), places a native trailing_stop
@@ -305,7 +337,7 @@ class AlpacaBroker(Broker):
         """
         qty = int(self._state.get("positions", {}).get(sym, {}).get("qty", 0))
         if qty <= 0:
-            return
+            return False
 
         if trail_pct:
             # Alpaca REST expects trail_percent as a percentage number (10.0 = 10%)
@@ -343,6 +375,9 @@ class AlpacaBroker(Broker):
                     f"[alpaca] {order_type} order placed: SELL {qty} {sym} "
                     f"@ {desc} (id={order_id})"
                 )
+                return True
+            log.warning(f"[alpaca] {order_type} order for {sym} returned no id")
+            return False
         except Exception as e:
             # 403 "insufficient qty" means Alpaca's available count lags the fill —
             # parse the actual available qty from the error body and retry once.
@@ -363,14 +398,21 @@ class AlpacaBroker(Broker):
                                 f"[alpaca] {order_type} order placed: SELL {avail} {sym} "
                                 f"@ {desc} (id={order_id2}) [retried: avail={avail} of {qty}]"
                             )
-                        return
+                            return True
+                        return False
                 except Exception:
                     pass
             log.warning(f"[alpaca] place_stop_order {sym} @ {desc}: {e}")
+            return False
 
     def place_order(self, order: Order) -> Order:
         sym = order.symbol.upper()
         side = "buy" if order.side == OrderSide.BUY else "sell"
+        submitted_qty = int(order.quantity)
+        if submitted_qty <= 0:
+            log.warning(f"[alpaca] place_order {side} {order.quantity} {sym}: non-positive qty")
+            order.status = "rejected"
+            return order
 
         # Cancel any standing stop order before a market sell to avoid double-fill
         if order.side == OrderSide.SELL:
@@ -378,7 +420,7 @@ class AlpacaBroker(Broker):
 
         body = {
             "symbol": sym,
-            "qty": str(int(order.quantity)),
+            "qty": str(submitted_qty),
             "side": side,
             "type": "market",
             "time_in_force": "day",
@@ -391,42 +433,47 @@ class AlpacaBroker(Broker):
             return order
 
         order_id = resp.get("id", str(uuid.uuid4()))
-        fill_price: float | None = None
-        raw_fill = resp.get("filled_avg_price")
-        if raw_fill:
-            fill_price = float(raw_fill)
+        latest = resp if isinstance(resp, dict) else {}
+        status, filled_qty, fill_price = self._order_fill_snapshot(latest)
+        terminal = {"filled", "canceled", "expired", "rejected", "done_for_day"}
 
-        # Paper market orders typically fill within seconds — poll once if not yet filled
-        if fill_price is None:
+        # Paper market orders typically fill within seconds; poll for confirmation.
+        for _ in range(5):
+            if status in terminal or (filled_qty > 0 and fill_price is not None):
+                break
             time.sleep(1)
             try:
-                poll = self._get(self._trade_base, f"/v2/orders/{order_id}")
-                raw_fill = (poll if isinstance(poll, dict) else {}).get("filled_avg_price")
-                if raw_fill:
-                    fill_price = float(raw_fill)
-            except Exception:
-                pass
-
-        # Last resort: use quote mid as synthetic fill price (log a warning)
-        if fill_price is None:
-            try:
-                fill_price = self.get_quote(sym).last
-                log.warning(
-                    f"[alpaca] {sym} fill price not confirmed; using quote {fill_price:.2f}"
+                latest = self._get(self._trade_base, f"/v2/orders/{order_id}")
+                status, filled_qty, fill_price = self._order_fill_snapshot(
+                    latest if isinstance(latest, dict) else {}
                 )
-            except Exception:
-                fill_price = 0.0
+            except Exception as poll_exc:
+                log.debug(f"[alpaca] order poll {order_id} failed: {poll_exc}")
+                break
 
         order.order_id = order_id
-        order.status = "filled"
-        order.filled_price = fill_price
-        order.filled_at = datetime.now(timezone.utc)
+        order.status = status
 
-        self._record_fill(sym, order.side, order.quantity, fill_price, order.notes)
-        log.info(
-            f"[alpaca] {'PAPER ' if self._paper else ''}fill: "
-            f"{side.upper()} {order.quantity} {sym} @ {fill_price:.2f}"
-        )
+        if filled_qty > 0 and fill_price is not None:
+            order.quantity = filled_qty
+            order.filled_price = fill_price
+            order.filled_at = datetime.now(timezone.utc)
+            self._record_fill(sym, order.side, filled_qty, fill_price, order.notes)
+            log.info(
+                f"[alpaca] {'PAPER ' if self._paper else ''}confirmed fill: "
+                f"{side.upper()} {filled_qty} {sym} @ {fill_price:.2f} "
+                f"(status={status}, id={order_id})"
+            )
+        elif filled_qty > 0:
+            log.warning(
+                f"[alpaca] {side.upper()} {sym} reports filled_qty={filled_qty} "
+                f"but no avg fill price; local state not updated (id={order_id})"
+            )
+        else:
+            log.warning(
+                f"[alpaca] {side.upper()} {submitted_qty} {sym} not confirmed filled "
+                f"(status={status}, id={order_id}); local state not updated"
+            )
         return order
 
     def _record_fill(self, sym: str, side: OrderSide,
@@ -501,4 +548,17 @@ class AlpacaBroker(Broker):
             pos_tags = pos.get("tags") or {}
             self._cancel_stop_order(sym)
             trail_pct = pos_tags.get("trail_pct") if pos_tags.get("trailing") else None
-            self._place_stop_order(sym, float(stop_loss), trail_pct=trail_pct)
+            placed = self._place_stop_order(sym, float(stop_loss), trail_pct=trail_pct)
+            pos = self._state["positions"].setdefault(sym, {})
+            pos_tags = pos.get("tags") or {}
+            if placed:
+                pos_tags["stop_order_status"] = "placed"
+                pos_tags.pop("stop_order_error", None)
+            else:
+                pos_tags["stop_order_status"] = "failed"
+                pos_tags["stop_order_error"] = "Alpaca stop order was not accepted"
+            pos["tags"] = pos_tags
+            self._state["positions"][sym] = pos
+            self._save_state()
+            if not placed:
+                raise RuntimeError(f"[alpaca] stop order not placed for {sym}")
