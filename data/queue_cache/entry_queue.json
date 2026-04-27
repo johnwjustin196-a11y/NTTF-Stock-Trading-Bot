@@ -11,21 +11,7 @@
     "combined_score_at_queue": 0.3069,
     "deep_size_mult": 1.0,
     "expires_at": "2026-04-27T20:00:00+00:00",
-    "check_count": 61
-  },
-  {
-    "symbol": "AMZN",
-    "queued_at": "2026-04-27T18:30:51.426332+00:00",
-    "queued_cycle": "14:30",
-    "entry_type": "bounce_support",
-    "price_at_queue": 261.73,
-    "trigger_price": 249.7902,
-    "fib_ratio": 0.786,
-    "fib_direction": "support",
-    "combined_score_at_queue": 0.3775,
-    "deep_size_mult": 1.0,
-    "expires_at": "2026-04-27T20:00:00+00:00",
-    "check_count": 1
+    "check_count": 73
   },
   {
     "symbol": "CRWD",
@@ -37,6 +23,20 @@
     "fib_ratio": 0.786,
     "fib_direction": "support",
     "combined_score_at_queue": 0.4367,
+    "deep_size_mult": 1.0,
+    "expires_at": "2026-04-27T20:00:00+00:00",
+    "check_count": 13
+  },
+  {
+    "symbol": "AMZN",
+    "queued_at": "2026-04-27T19:30:51.343486+00:00",
+    "queued_cycle": "15:30",
+    "entry_type": "bounce_support",
+    "price_at_queue": 260.97,
+    "trigger_price": 249.7902,
+    "fib_ratio": 0.786,
+    "fib_direction": "support",
+    "combined_score_at_queue": 0.4136,
     "deep_size_mult": 1.0,
     "expires_at": "2026-04-27T20:00:00+00:00",
     "check_count": 1
