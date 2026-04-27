@@ -3,58 +3,58 @@
   "window_days": 30,
   "indicators": {
     "rsi": {
-      "samples": 144,
-      "hit_rate": 0.8403,
-      "avg_edge": 0.00021,
-      "correlation": -0.0438
+      "samples": 168,
+      "hit_rate": 0.7202,
+      "avg_edge": 0.000475,
+      "correlation": -0.0109
     },
     "macd": {
-      "samples": 144,
-      "hit_rate": 0.8403,
-      "avg_edge": 0.00021,
-      "correlation": 0.02
+      "samples": 168,
+      "hit_rate": 0.7202,
+      "avg_edge": 0.000475,
+      "correlation": -0.0164
     },
     "trend": {
-      "samples": 144,
-      "hit_rate": 0.8403,
-      "avg_edge": 0.00021,
-      "correlation": 0.0393
+      "samples": 168,
+      "hit_rate": 0.7202,
+      "avg_edge": 0.000475,
+      "correlation": -0.0889
     },
     "bb": {
-      "samples": 144,
-      "hit_rate": 0.8403,
-      "avg_edge": 0.00021,
-      "correlation": -0.0515
+      "samples": 168,
+      "hit_rate": 0.7202,
+      "avg_edge": 0.000475,
+      "correlation": -0.0239
     },
     "obv": {
-      "samples": 144,
-      "hit_rate": 0.8403,
-      "avg_edge": 0.00021,
-      "correlation": 0.0596
+      "samples": 168,
+      "hit_rate": 0.7202,
+      "avg_edge": 0.000475,
+      "correlation": 0.0883
     },
     "vwap": {
-      "samples": 121,
-      "hit_rate": 0.8678,
-      "avg_edge": 0.000249,
-      "correlation": 0.0092
+      "samples": 145,
+      "hit_rate": 0.7241,
+      "avg_edge": 0.000551,
+      "correlation": -0.0135
     },
     "fib": {
-      "samples": 144,
-      "hit_rate": 0.8403,
-      "avg_edge": 0.00021,
-      "correlation": 0.0238
+      "samples": 168,
+      "hit_rate": 0.7202,
+      "avg_edge": 0.000475,
+      "correlation": 0.0467
     },
     "roc": {
-      "samples": 144,
-      "hit_rate": 0.8403,
-      "avg_edge": 0.00021,
-      "correlation": 0.052
+      "samples": 168,
+      "hit_rate": 0.7202,
+      "avg_edge": 0.000475,
+      "correlation": 0.0757
     },
     "rs_etf": {
-      "samples": 144,
-      "hit_rate": 0.8403,
-      "avg_edge": 0.00021,
-      "correlation": 0.0244
+      "samples": 168,
+      "hit_rate": 0.7202,
+      "avg_edge": 0.000475,
+      "correlation": -0.0774
     }
   }
 }

@@ -1,1 +1,47 @@
-{"version": 1, "rules": []}
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "r_2026-04-27_01",
+      "text": "Prioritize news sentiment",
+      "condition": "news_sentiment < 0 and rsi > 70",
+      "action": "SKIP_BUY",
+      "rationale": "Negative news can outweigh technical signals in overbought conditions.",
+      "proposed_on": "2026-04-27",
+      "regime_when_proposed": "bullish",
+      "active": true,
+      "stats": {
+        "fire_count": 0,
+        "hit_count": 0,
+        "follow_count": 0,
+        "follow_hit_count": 0,
+        "edge_sum": 0.0,
+        "edge_sum_when_followed": 0.0,
+        "avg_edge": 0.0,
+        "avg_edge_when_followed": 0.0,
+        "last_fired": null
+      }
+    },
+    {
+      "id": "r_2026-04-27_02",
+      "text": "Adjust queue triggers",
+      "condition": "price_within_5%_of_trigger and trend == downtrend",
+      "action": "REDUCE_SIZE",
+      "rationale": "Reduce size for entries close to trigger but in a downtrend to minimize risk.",
+      "proposed_on": "2026-04-27",
+      "regime_when_proposed": "bullish",
+      "active": true,
+      "stats": {
+        "fire_count": 0,
+        "hit_count": 0,
+        "follow_count": 0,
+        "follow_hit_count": 0,
+        "edge_sum": 0.0,
+        "edge_sum_when_followed": 0.0,
+        "avg_edge": 0.0,
+        "avg_edge_when_followed": 0.0,
+        "last_fired": null
+      }
+    }
+  ]
+}

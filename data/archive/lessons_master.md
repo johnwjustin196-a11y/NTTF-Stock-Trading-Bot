@@ -12,3 +12,26 @@
 - [hit] **PANW** BUY @ 12:30 — edge +0.41% (MFE +0.72% / MAE -0.10%) — Strong news, bullish regime, positive technicals; no position history to contradict. | trend=uptrend | regime=bullish | 
 - [hit] **ARM** BUY @ 11:30 — edge +0.34% (MFE +1.37% / MAE -0.68%) — Bullish regime, strong technicals and news sentiment; no conflicting rules or lessons. | trend=uptrend | regime=bullish
 ---
+# Lessons Learned
+
+Dated notes the bot writes to itself at end of day.
+
+## 2026-04-27 [regime: bullish]
+
+# Daily Review
+Today's dominant market regime was **bullish**.
+
+- **What worked:**
+    - Strong technicals and bullish news sentiment led to successful buys in ARM, MRVL, and MU.
+    - Holding positions despite overbought RSI due to strong market breadth (e.g., ARM).
+    - Positive outcomes from holding during uptrends with mixed signals but strong bullish regime (e.g., MSFT).
+
+- **What didn't work:**
+    - Overlooking negative news sentiment led to underperformance in MU and MRVL.
+    - Holding despite overbought RSI sometimes resulted in minor losses or missed opportunities (e.g., MU).
+    - Queue entries for AMZN and CRWD did not trigger due to higher-than-expected support levels.
+
+- **Rules for tomorrow:**
+    - Prioritize news sentiment over technicals when the market is overbought, especially if negative.
+    - Be cautious with queue entries that have high resistance triggers; adjust based on current price action.
+---
