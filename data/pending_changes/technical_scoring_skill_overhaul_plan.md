@@ -500,11 +500,11 @@ The new technical scorer must be observable enough that we can tell what helped,
 
 Use the existing backtest artifacts first:
 
-- `data/backtest_decisions.jsonl` for the latest run's per-decision rows
-- `data/archive/backtest_decisions_master.jsonl` for long-term decision history
-- `data/backtest_results.json` for the latest run summary
-- archived `data/archive/backtest_results_*.json` files for run comparisons
-- `data/backtest_history.json` for run metadata
+- `data/backtest_workspace/backtest_decisions.jsonl` for the latest run's per-decision rows
+- `data/backtest_workspace/archive/backtest_decisions_master.jsonl` for long-term decision history
+- `data/backtest_workspace/backtest_results.json` for the latest run summary
+- archived `data/backtest_workspace/archive/backtest_results_*.json` files for run comparisons
+- `data/backtest_workspace/backtest_history.json` for run metadata
 - dashboard indicator pages for score/outcome analysis
 
 If the skill payload becomes too large for the normal decision rows, add a compact summary to the normal row and write the full payload to a run-scoped JSONL file:
